@@ -104,19 +104,6 @@ if strcmp(integrator,'eulero')
     dt = integratorOptions.dt;
     cd('tmp');
     
-%     totalMexString = '';
-%     
-%     object.generateC('vectorField');  
-%       
-%     for i=1:N
-%         nm = ['neuron',num2str(i)];
-% %         object.neurons{i}.generateC(nm);
-%         eval(['mex -c ',nm,'.c'])
-%         totalMexString = [totalMexString,' ',nm,'.o'];
-%     end
-% 
-%     mex -c vectorField.c;
-    
      fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.h"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
@@ -156,21 +143,7 @@ elseif strcmp(integrator,'odeint')
     oldFolder = cd;
     mkdir('tmp');
     cd('tmp');
-%     
-%     totalMexString = '';
-%     
-%     object.generateC('vectorField');
-%     
-%     for i=1:N
-%         nm = ['neuron',num2str(i)];
-% %         object.neurons{i}.generateC(nm);
-%         movefile([nm,'.c'],[nm,'.cpp']);
-%         eval(['mex -c ',nm,'.cpp'])
-%         totalMexString = [totalMexString,' ',nm,'.o'];
-%     end
-%     
-%     movefile('vectorField.c','vectorField.cpp');
-%     mex -c vectorField.cpp;
+
     
     fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.h"\n');
@@ -202,9 +175,30 @@ elseif strcmp(integrator,'odeint')
     rmdir('tmp','s');
     
 else
-    integratorOptions.Jacobian = @object.getJacobian;
-    command = [integrator,'(@object.getXdot,[Tspan(1) Tspan(2)],x0,integratorOptions);'];
-    [T,X] = eval(command);
+%     integratorOptions.Jacobian = @object.getJacobian;    
+    integratorOptions.Events = @object.getResetConditions;
+    
+    currentT = Tspan(1);
+    
+    T = [0];
+    X = [zeros(1,object.totState)];
+    
+    while(currentT < Tspan(2))
+        
+        command = [integrator,'(@object.getXdot,[currentT Tspan(2)],x0,integratorOptions);'];
+        [Ttmp,Xtmp,~,~,ieTmp] = eval(command);
+        [x0,object] = object.resetStates(Ttmp(end),Xtmp(end,:),ieTmp);
+        
+        T(end) = [];
+        X(end,:) = [];
+        
+        T = [T;Ttmp];
+        X = [X;Xtmp];
+        
+        currentT = T(end);
+        
+    end
+    
 end
 
 

@@ -211,6 +211,9 @@ classdef CPG
         object = set_g_el(object,g_el);
         [w_in,w_ex,w_el,M_in,M_ex,M_el] = computeMw(object,PRC,limitCycle,varargin);
         
+         [position,isterminal,direction] = getResetConditions(object,t,y);
+        [xreset,object] = resetStates(object,t,x,ie);
+        
     end
     
     
