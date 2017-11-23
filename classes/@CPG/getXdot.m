@@ -41,43 +41,71 @@ excActivation = object.excActivation;
 neurons = object.neurons;
 
 %The neurons must be all the same name of state variable
-nx = neurons{1}.getnx();
+% nx = neurons{1}.getnx();
 
-x_dot = zeros(nx*N,1);
+totStates = object.totState;
+incrementalIndexState = object.incrementalIndexState;
+
+x_dot = zeros(totStates,1);
 
 %Valori sinapsi
 EsynIn = object.EsynIn;
 EsynEx = object.EsynEx;
 
 
-
+% Update neurons states
 for i=1:N
     Isyn = 0;
-    beginI = (i-1)*nx+1;
-    endI = (i-1)*nx+nx;
+    beginI = incrementalIndexState(i);
+    endI = incrementalIndexState(i+1)-1;
     %Compute exc syn
     for j=1:N
         if g_ex(i,j) ~= 0
-            otherI = (j-1)*nx+1;
+            otherI = incrementalIndexState(j);
             Isyn = Isyn + g_ex(i,j)*(-x(beginI)+EsynEx)*excActivation{i,j}.getActivation(x(otherI));
         end
     end
     %compute inh syn
     for j=1:N
         if g_in(i,j) ~= 0
-            otherI = (j-1)*nx+1;
+            otherI = incrementalIndexState(j);
             Isyn = Isyn + g_in(i,j)*(-x(beginI)+EsynIn)*inhActivation{i,j}.getActivation(x(otherI));
         end
     end
     %compute el syn
     for j=1:N
         if g_el(i,j) ~= 0
-            otherI = (j-1)*nx+1;
+            otherI = incrementalIndexState(j);
             Isyn = Isyn + g_el(i,j)*(+x(otherI)-x(beginI));
         end
     end
     
     x_dot(beginI:endI) = neurons{i}.getXdot(t,x(beginI:endI),Isyn);
 end
+
+
+% Update synapses states
+ii = 2;
+for i=1:N
+    for j=1:N
+        beginI = incrementalIndexState(N+ii);
+        endI = incrementalIndexState(N+ii)-1;
+        
+        x_dot(beginI:endI) = inhActivation{i,j}.getXdot(t,x(beginI:endI));
+        ii = ii+1;
+    end
+end
+
+for i=1:N
+    for j=1:N
+        beginI = incrementalIndexState(N+ii);
+        endI = incrementalIndexState(N+ii)-1;
+        
+        x_dot(beginI:endI) = excActivation{i,j}.getXdot(t,x(beginI:endI));
+        ii = ii+1;
+    end
+end
+
+
 
 end

@@ -78,6 +78,10 @@ classdef CPG
         EsynEx = 0;  % Chimical excitatory synapsis reverse potential
         inhActivation = {};
         excActivation = {};
+        
+        totState = 0;
+        incrementalIndexState = [];
+        
     end
     
     %methods
@@ -93,6 +97,9 @@ classdef CPG
             object.g_el = zeros(N,N);
             object.inhActivation = cell(N,N);
             object.excActivation = cell(N,N);
+            
+            object.incrementalIndexState = zeros(N+2*N*N+1,1);
+            object.incrementalIndexState(1) = 1;
             if nargin >= 2
                 %set neurons model
                 nModel = varargin{1};
@@ -100,6 +107,7 @@ classdef CPG
                     
                     for i=1:N
                         object.neurons{i} = nModel;
+                        object.incrementalIndexState(i+1) = object.incrementalIndexState(i)+nModel.getnx;
                     end
                 elseif numel(nModel) == N && iscell(nModel)
                     for i=1:N
@@ -107,6 +115,7 @@ classdef CPG
                             error('Error in object input');
                         end
                         object.neurons{i} = nModel{i};
+                        object.incrementalIndexState(i+1) = object.incrementalIndexState(i)+nModel{i}.getnx;
                     end
                 else
                     error('Error in object input');
@@ -123,10 +132,14 @@ classdef CPG
                 
                 act = varargin{7};
                 
+                ii = 2;
+                
                 if isscalar(act) && isa(act,'synapse_model')
                     for i=1:N
                         for j=1:N
                             object.inhActivation{i,j} = act;
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            ii = ii+1;
                         end
                     end
                 elseif all(size(act) == [N,N]) && iscell(act)
@@ -137,6 +150,8 @@ classdef CPG
                             end
                             
                             object.inhActivation{i,j} = act{i,j};
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            ii = ii+1;
                         end
                     end
                 else
@@ -150,6 +165,8 @@ classdef CPG
                     for i=1:N
                         for j=1:N
                             object.excActivation{i,j} = act;
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            ii = ii+1;
                         end
                     end
                 elseif all(size(act) == [N,N]) && iscell(act)
@@ -160,12 +177,15 @@ classdef CPG
                             end
                             
                             object.excActivation{i,j} = act{i,j};
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            ii = ii+1;
                         end
                     end
                 else
                     error('Error in object input');
                 end
                 
+                object.totState = object.incrementalIndexState(end)-1;
                 
             end
         end

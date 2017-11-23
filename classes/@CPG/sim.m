@@ -54,8 +54,8 @@ possibleSolver = {'ode45','ode23','ode113','ode15s','ode23s','ode23t','ode23tb',
 nx = object.neurons{1}.getnx;
 N  = object.N;
 
-if size(x0,2) ~= nx*N
-    error(['x0 must be a vector with ',num2str(nx*N),' columns']);
+if size(x0,2) ~= object.totState
+    error(['x0 must be a vector with ',num2str(object.totState),' columns']);
 end
 
 if numel(Tspan) == 1
@@ -135,11 +135,11 @@ if strcmp(integrator,'eulero')
         X = cell(size(x0,1),1);
         T = cell(size(x0,1),1);
         parfor kk = 1:size(x0,1)
-            X{kk} = eulero(nx*N,nStep,dt,x0(kk,:))';
+            X{kk} = eulero(object.totState,nStep,dt,x0(kk,:))';
             T{kk} = Ti;
         end
     else
-        X = eulero(nx*N,nStep,dt,x0);
+        X = eulero(object.totState,nStep,dt,x0);
 	X = X';
         T = Ti;
     end
@@ -191,11 +191,11 @@ elseif strcmp(integrator,'odeint')
         X = cell(size(x0,1),1);
         T = cell(size(x0,1),1);
         parfor kk = 1:size(x0,1)
-            [T{kk},X{kk}] = odeint(nx*N,Tspan(2)-Tspan(1),dt,x0(kk,:));
+            [T{kk},X{kk}] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0(kk,:));
             T{kk} = T{kk}+Tspan(1);
         end
     else
-        [T,X] = odeint(nx*N,Tspan(2)-Tspan(1),dt,x0);
+        [T,X] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0);
         T=T+Tspan(1);
     end
     cd(oldFolder);

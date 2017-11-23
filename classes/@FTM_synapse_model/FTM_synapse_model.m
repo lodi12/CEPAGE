@@ -56,9 +56,15 @@ classdef FTM_synapse_model < synapse_model
             if nargin == 0
                 object.nu = 0;
                 object.theta = 0;
+                object.nx = 0;
+                object.modelName = 'FTM_synapse';
+                object.isContinuous = true;
             elseif nargin == 2
                 object.nu = varargin{1};
                 object.theta = varargin{2};
+                object.nx = 0;
+                object.modelName = 'FTM_synapse';
+                object.isContinuous = true;
             else
                 error('Wrong number of input arguments');
             end
@@ -67,6 +73,7 @@ classdef FTM_synapse_model < synapse_model
         act = getActivation(object,Vpre);    
         str = getCbuilder(object);
         disp(object);
+        x_dot = getXdot(object,t,x,varargin);
     end
     
 end

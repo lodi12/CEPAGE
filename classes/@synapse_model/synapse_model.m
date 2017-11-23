@@ -35,12 +35,16 @@ classdef synapse_model
     
     %Properties
     properties (Access = protected)
+        nx = 0 % number of state variable
+        xnames = cell(0); % States name
         modelName = '';
+        isContinuous = false;
     end
     
     methods (Abstract)
         % Other methods
         act = getActivation(object,Vpre);    
+        x_dot = getXdot(object,t,x,varargin);
         str = getCbuilder(object);
     end
     
@@ -51,6 +55,12 @@ classdef synapse_model
         function object = synapse_model(varargin)
             % abstract class empty cconstructor
         end
+        
+        
+        nx = getnx(object);
+        names = getStateNames(object);
+        [position,isterminal,direction] = getResetConditions(object,t,y);
+        [xreset,object] = resetStates(object,t,x);
         
     end
     
