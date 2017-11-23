@@ -50,12 +50,12 @@ classdef neuron_model
     
     methods (Abstract)
         % Other methods
-        str = getCbuilder(object);    
+        str = getCbuilder(object);
         x_dot = getXdot(object,t,x,varargin);
         J = getJacobian(object,x);
     end
     
-
+    
     
     methods
         %constructor
@@ -70,11 +70,11 @@ classdef neuron_model
         [T,X] = sim(object,Tspan,x0,varargin);
         [T,X] = simplot(object,Tspan,x0,varargin);
         
-       
         
-         [position,isterminal,direction] = getResetConditions(object,t,y);
+        
+        [position,isterminal,direction] = getResetConditions(object,t,y);
         [xreset,object] = resetStates(object,t,x);
-        
+        cont = is_continuous(object);
     end
     
 end

@@ -82,7 +82,7 @@ classdef IZ_model < neuron_model
             obj.nx = 2;
             obj.xnames = {'v','u'};
             obj.modelName = 'Morris-Lecar';
-            obj.isContinuous = true;
+            obj.isContinuous = false;
             if nargin == 7
                 obj.a = varargin{1};
                 obj.b = varargin{2};

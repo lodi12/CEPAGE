@@ -213,7 +213,7 @@ classdef CPG
         
          [position,isterminal,direction] = getResetConditions(object,t,y);
         [xreset,object] = resetStates(object,t,x,ie);
-        
+        cont = is_continuous(object)
     end
     
     

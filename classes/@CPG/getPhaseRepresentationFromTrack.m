@@ -34,15 +34,18 @@ function phi = getPhaseRepresentationFromTrack(object,T,X,Vth )
 
 N = object.N;
 
-nx = object.neurons{1}.getnx;
+
+totState = object.totState;
+incrementalIndexState = object.incrementalIndexState;
+
 
 nc = size(X,2);
 
-if nc ~= N*nx
+if nc ~= totState
     error(['X must have ',num2str(N*nx),'columns']);
 end
 
-ii = (0:N-1)*nx+1;
+ii = incrementalIndexState(1:N);
 
 X = X(:,ii);
 

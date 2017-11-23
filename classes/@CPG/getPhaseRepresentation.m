@@ -220,6 +220,12 @@ elseif strcmp(integrator,'odeint')
     rmdir(nameFolder,'s');
     
 else
+    
+    if ~object.is_continuous
+        error(['Pahse representation employing MATLAB integrator '...
+        'can be used only for continuous system']);
+    end
+    
     Te = cell(size(CI,1),1);
     ie = cell(size(CI,1),1);
     eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
@@ -232,22 +238,23 @@ else
     
     for i=1:size(CI,1)
         x0  = CI(i,:);
+        
         command = [integrator,'(@object.getXdot,[Tspan(1) Tspan(2)],x0,integratorOptions);'];
-        [~,~,Te{i},~,ie{i}] = eval(command);
+        [~,~,Te,~,ie] = eval(command);
         
         
         len = Inf;
         
         for n=1:N
-            len = min([len,sum(ie{i} == n)]);
+            len = min([len,sum(ie == n)]);
         end
         
         phiTmp = zeros(len-1,N-1);
         
-        T1 = Te{i}(ie{i} == 1);
+        T1 = Te(ie == 1);
         
         for n=2:N
-            Tn = Te{i}(ie{i} == n);
+            Tn = Te(ie == n);
             phiTmp(:,n-1) = mod((Tn(2:len)-T1(2:len))./(T1(2:len)-T1(1:len-1)),1);
         end
         
