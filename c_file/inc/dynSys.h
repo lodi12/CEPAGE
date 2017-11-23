@@ -14,6 +14,8 @@
 #ifndef DYNSYS_H
 #define DYNSYS_H
 
+#include "stdlib.h"
+
 class dynSys 
 {
 public:
@@ -21,6 +23,8 @@ public:
     virtual bool getResetConditions(double *x) = 0;
     virtual void resetStates(double *x) = 0;
 
+    virtual void getFirstIndex(int *firstIndex);
+    
 
 };
 

@@ -35,9 +35,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     
     mwSize N;
-    mwSize nx_ = 0;
-        dynSys *vectorField;
 
+    int *firstIndex;
+    
+    dynSys *vectorField;
+
+    mwSize tmpIndex;
+    
         
     /* check for proper number of arguments */
     if(nrhs!=7) {
@@ -64,6 +68,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
     nEvent = (mwSize *)mxMalloc(N*sizeof(mwSize));
     eventMatrix = (double **)mxMalloc(N*sizeof(double *));   
    
+    firstIndex = (int *)mxMalloc((N+2*N*N)*sizeof(int));
+    
+    vectorField->getFirstIndex(firstIndex);
+    
+    
     for(j=0;j<N;j++)
     {
         eventMatrix[j] = (double *)mxMalloc(0);
@@ -76,12 +85,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
 
     currentT = 0;
-    
+        
     for(i=1;i<nStep;i++)
     {
-        
-        
-        
+                
         vectorField->getXdot(0,oldState,dx,0);
         currentT += dt;
 
@@ -94,14 +101,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
             vectorField->resetStates(currentState);
         }
 
-        
-        for(j=0;j<Nstati;j+=nx_)
+         
+        for(j=0;j<N;j++)
         {
-            if((oldState[j] < Vth) && (currentState[j] > Vth))
+
+            tmpIndex = firstIndex[j];
+
+            if((oldState[tmpIndex] < Vth) && (currentState[tmpIndex] > Vth))
             {
-                nEvent[j/nx_]++;
-                eventMatrix[j/nx_] = (double *)mxRealloc(eventMatrix[j/nx_],nEvent[j/nx_]*sizeof(double));
-                eventMatrix[j/nx_][nEvent[j/nx_]-1] = currentT;
+                nEvent[j]++;
+                eventMatrix[j] = (double *)mxRealloc(eventMatrix[j],nEvent[j]*sizeof(double));
+                eventMatrix[j][nEvent[j]-1] = (Vth-oldState[tmpIndex])/(currentState[tmpIndex]-oldState[tmpIndex])*(dt)+(currentT-dt);
             }
         }
 
@@ -109,23 +119,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         {
             oldState[j] = currentState[j];
         }
-        /*diff = 0;
-
-        for(j=0;j<Nstati;j++)
-        {
-            tmp = oldState[j] - currentState[j];
-            if (tmp < 0)
-                tmp *=-1;
-            diff+= tmp;
-            oldState[j] = currentState[j];
-        }
-        
-        
-
-        if(diff < stopThreshold)
-            break;*/
     }
-    
     
     
      minEventNumber = nEvent[0];

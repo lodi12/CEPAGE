@@ -13,12 +13,13 @@ double *dxC;
 
 double Vth;
 
+int *firstIndex;
 
 mwSize *nEvent;
 
 mwSize minEventNumber;
 
-mwSize nx_;
+mwSize N;
 
 state_type oldState;
 
@@ -42,8 +43,8 @@ void cppVectorialField( const state_type &x , state_type &dxdt , const double  t
 
 struct push_back_events
 {
-   double **eventMatrix;
-    
+    double **eventMatrix;
+    int tmpIndex;
     push_back_events(double **eventMatrix_) : eventMatrix(eventMatrix_) { }
     
     void operator()( state_type &x , double t )
@@ -51,25 +52,31 @@ struct push_back_events
         mwSize i,j;
         for(i=0;i<Nstati;i++)
             xC[i] = x[i];
-
-
+        
+        
         if (vectorField->getResetConditions(xC))
         {
             vectorField->resetStates(xC);
         }
-
-        for(i=0;i<Nstati;i++)
-            x[i] = xC[i];
         
-        for(j=0;j<Nstati;j+=nx_)
+        for(i=0;i<Nstati;i++)
+            x[i] = xC[i];    
+        
+       
+        
+        for(j=0;j<N;j++)
         {
-            if((oldState[j] < Vth) && (x[j] > Vth))
+
+            tmpIndex = firstIndex[j];
+           
+            if((oldState[tmpIndex] < Vth) && (x[tmpIndex] > Vth))
             {
-                nEvent[j/nx_]++;
-                eventMatrix[j/nx_] = (double *)mxRealloc(eventMatrix[j/nx_],nEvent[j/nx_]*sizeof(double));
-                eventMatrix[j/nx_][nEvent[j/nx_]-1] = (Vth-oldState[j])/(x[j]-oldState[j])*(t-oldT)+oldT;
+                nEvent[j]++;
+                eventMatrix[j] = (double *)mxRealloc(eventMatrix[j],nEvent[j]*sizeof(double));
+                eventMatrix[j][nEvent[j]-1] = (Vth-oldState[tmpIndex])/(x[tmpIndex]-oldState[tmpIndex])*(t-oldT)+oldT;
             }
         }
+        
         copy(x.begin(), x.end(), oldState.begin());
         oldT = t;
     }
@@ -93,9 +100,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     double *xOutMatrix; /* Out vector */
     double *dx;
     
-     double *phiOut;   
+    double *phiOut;
     double period;
-
+    
     /* check for proper number of arguments */
     if(nrhs!=6) {
         mexErrMsgIdAndTxt("MyToolbox:sim:nrhs","Error! 4 Input required.");
@@ -109,7 +116,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     dt = mxGetScalar(prhs[2]);
     x0 = mxGetPr(prhs[3]);
     Vth = mxGetScalar(prhs[4]);
-    nx_ =  mxGetScalar(prhs[5]);
+    N =  mxGetScalar(prhs[5]);
     state_type xinit(Nstati);
     state_type x(Nstati);
     
@@ -118,11 +125,17 @@ void mexFunction( int nlhs, mxArray *plhs[],
     xC = (double *)(mxMalloc(Nstati*sizeof(double)));
     dxC = (double *)(mxMalloc(Nstati*sizeof(double)));
     
+    firstIndex = (int *)mxMalloc((N+2*N*N)*sizeof(int));
+    
+
     oldT = 0;
-    nEvent = (mwSize *)mxMalloc(Nstati/nx_*sizeof(mwSize));
-    eventMatrix = (double **)mxMalloc(Nstati/nx_*sizeof(double *));
+    nEvent = (mwSize *)mxMalloc(N*sizeof(mwSize));
+    eventMatrix = (double **)mxMalloc(N*sizeof(double *));
+    
     
     initVectorField(&vectorField);
+    vectorField->getFirstIndex(firstIndex);
+    
     
     for(i=0;i<Nstati;i++)
     {
@@ -130,13 +143,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
         oldState.push_back(x0[i]);
     }
     
-    for(j=0;j<Nstati/nx_;j++)
+    
+    for(j=0;j<N;j++)
     {
         eventMatrix[j] = (double *)mxMalloc(0);
         nEvent[j] = 0;
     }
     
-
+    
     typedef runge_kutta_cash_karp54< state_type > error_stepper_type;
     
     
@@ -146,34 +160,34 @@ void mexFunction( int nlhs, mxArray *plhs[],
     size_t steps = integrate_adaptive( controlled_stepper , cppVectorialField , xinit , 0.0 , Tfinale, dt ,
             push_back_events(eventMatrix));
     minEventNumber = nEvent[0];
-
-     for(i=1;i<(Nstati/nx_);i++)
-         if(minEventNumber > nEvent[i])
-             minEventNumber = nEvent[i];
-
-    mxFree(xC);
-    mxFree(dxC);
     
-    plhs[0] = mxCreateDoubleMatrix(minEventNumber,(Nstati/nx_)-1,mxREAL);
-    phiOut = mxGetPr(plhs[0]);
+    for(i=1;i<N;i++)
+        if(minEventNumber > nEvent[i])
+            minEventNumber = nEvent[i];
+    
 
+    
+    plhs[0] = mxCreateDoubleMatrix(minEventNumber,N-1,mxREAL);
+    phiOut = mxGetPr(plhs[0]);
+    
     if(minEventNumber > 1)
     {
         period = eventMatrix[0][minEventNumber-1] - eventMatrix[0][minEventNumber-2];
-
-        for(i=0;i<(Nstati/nx_)-1;i++)
+        
+        for(i=0;i<N-1;i++)
         {
             for(j=0;j<minEventNumber;j++)
             {
-               phiOut[i*minEventNumber+j] =  ((eventMatrix[i+1][j]-eventMatrix[0][j])/period);
+                phiOut[i*minEventNumber+j] =  ((eventMatrix[i+1][j]-eventMatrix[0][j])/period);
             }
         }
     }
     
-    for(j=0;j<(Nstati/nx_);j++)
+    for(j=0;j<N;j++)
     {
         mxFree(eventMatrix[j]);
     }
     mxFree(eventMatrix);
-    
+    mxFree(xC);
+    mxFree(dxC);
 }

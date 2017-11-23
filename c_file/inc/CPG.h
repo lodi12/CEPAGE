@@ -44,6 +44,9 @@ public:
     void getXdot(double t, double *x, double *xdot,double Iext);
     bool getResetConditions(double *x);
     void resetStates(double *x);
+    
+    void getFirstIndex(int *firstIndex);
+    
     virtual ~CPG();
 
 

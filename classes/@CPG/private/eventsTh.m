@@ -13,12 +13,13 @@ if nargin == 4
     end
 end
 
-nx = object.neurons{1}.getnx();
-N = numel(y)/nx;
+N = object.N;
+
+startIndex = object.incrementalIndexState;
 
 value = zeros(N,1);
 for i = 1:N
-    index = (i-1)*nx+1;
+    index = startIndex(i);
     value(i,1) = y(index) - Vth;
 end
 isterminal = zeros(N,1);
