@@ -14,3 +14,17 @@
 #include "../inc/synapse_model.h"
 
 
+int synapse_model::getnx() 
+{
+    return this->nx;
+}
+
+bool synapse_model::getResetConditions(double *x)
+{
+    return false;
+}
+
+void synapse_model::resetStates(double *x)
+{
+    return;
+}

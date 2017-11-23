@@ -18,8 +18,15 @@
 class synapse_model
 {        
     
+protected:    
+    int nx;
+    
 public:
     virtual double getActivation(double Vpre) = 0;
+    virtual void getXdot(double t, double *x, double *xdot) = 0;
+    virtual bool getResetConditions(double *x);
+    virtual void resetStates(double *x);
+    int getnx();
 };
 
 #endif /* NEURON_MODEL_H */

@@ -53,7 +53,7 @@ CPG::CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,
     this->excActivation = excActivation;
 
     
-    this->firstState = (int *)malloc(N*sizeof(int));
+    this->firstState = (int *)malloc(N*sizeof(int)+2*N*N*sizeof(int));
     
     index = 0;
     for(i=0;i<N;i++)
@@ -61,6 +61,19 @@ CPG::CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,
         this->firstState[i] = index;
         index += (this->neuroni[i])->getnx();
     }
+    
+    for(i=0;i<N*N;i++)
+    {
+        this->firstState[N+i] = index;
+        index += (this->inhActivation[i])->getnx();
+    }
+    
+    for(i=0;i<N*N;i++)
+    {
+        this->firstState[N+N*N+i] = index;
+        index += (this->excActivation[i])->getnx();
+    }
+    
     
 }
 
@@ -84,6 +97,7 @@ void CPG::getXdot(double t, double *x, double *xdot,double Iext)
     
     double Isyn,Vi,Vj;
     
+    /* Compute neurons differentials */
     for(i=0;i<N;i++)
     {
         Isyn = 0;
@@ -108,6 +122,16 @@ void CPG::getXdot(double t, double *x, double *xdot,double Iext)
         neuroni[i]->getXdot(t,x+Vindex[i],xdot+Vindex[i],Isyn);
     }
     
+    
+    /* Compute synapses */
+    for(i=0;i<N*N;i++)
+    {
+        inhActivation[i]->getXdot(t,x+Vindex[N+i],xdot+Vindex[N+i]);
+        excActivation[i]->getXdot(t,x+Vindex[N+N*N+i],xdot+Vindex[N+N*N+i]);
+    }
+    
+    
+    
 }
 
 
@@ -127,6 +151,16 @@ bool CPG::getResetConditions(double *x)
         }
     }
     
+    for(i=0;i<N*N;i++)
+    {
+        if(((inhActivation[i])->getResetConditions(x+Vindex[N+i])) || ((excActivation[i])->getResetConditions(x+Vindex[N+N*N+i])))
+        {
+            return true;
+            break;
+        }
+    }
+    
+    
     return false;
 }
 
@@ -144,6 +178,21 @@ void CPG::resetStates(double *x)
             (neuroni[i])->resetStates(x+Vindex[i]);
         }
     }
+    
+    
+     for(i=0;i<N*N;i++)
+    {
+        if((inhActivation[i])->getResetConditions(x+Vindex[N+i]))
+        {
+            (inhActivation[i])->resetStates(x+Vindex[N+i]);
+        }
+        
+        if((excActivation[i])->getResetConditions(x+Vindex[N+N*N+i]))
+        {
+            (excActivation[i])->resetStates(x+Vindex[N+N*N+i]);
+        }
+    }
+    
     return;
 }
 

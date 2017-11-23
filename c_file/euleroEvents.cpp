@@ -33,10 +33,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     mwSize minEventNumber;
     
-    mwSize nx_;
     
     mwSize N;
-    
+    mwSize nx_ = 0;
         dynSys *vectorField;
 
         
@@ -57,9 +56,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     oldState = mxGetPr(prhs[3]);
     Vth = mxGetScalar(prhs[4]);
     stopThreshold = mxGetScalar(prhs[5]);
-    nx_ =  mxGetScalar(prhs[6]);
+    N =  mxGetScalar(prhs[6]);
     
-    N = Nstati/nx_;
     
     currentState = (double *)mxMalloc(Nstati*sizeof(double));
     dx = (double *)mxMalloc(Nstati*sizeof(double));

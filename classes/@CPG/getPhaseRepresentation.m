@@ -51,11 +51,12 @@ function phi = getPhaseRepresentation(object,Tspan,CI,varargin )
 
 possibleSolver = {'ode45','ode23','ode113','ode15s','ode23s','ode23t','ode23tb','eulero','odeint'};
 
-nx = object.neurons{1}.getnx;
+% nx = object.neurons{1}.getnx;
 N  = object.N;
+Nstati = object.totState;
 
-if size(CI,2) ~= nx*N
-    error(['initial conditions must be a vector with ',num2str(nx*N),' columns']);
+if size(CI,2) ~= Nstati
+    error(['initial conditions must be a vector with ',num2str(Nstati),' columns']);
 end
 
 if numel(Tspan) == 1
@@ -151,10 +152,10 @@ if strcmp(integrator,'eulero')
     if size(CI,1) > 1
         phi = cell(size(CI,1),1);
         parfor kk = 1:size(CI,1)
-            phi{kk} = mod(euleroEvents(nx*N,nStep,dt,CI(kk,:),Vth,stopThreshold,nx),1);
+            phi{kk} = mod(euleroEvents(Nstati,nStep,dt,CI(kk,:),Vth,stopThreshold,N),1);
         end
     else
-        phi = mod(euleroEvents(nx*N,nStep,dt,CI,Vth,stopThreshold,nx),1);
+        phi = mod(euleroEvents(Nstati,nStep,dt,CI,Vth,stopThreshold,N),1);
         
     end
     cd(oldFolder);
@@ -210,10 +211,10 @@ elseif strcmp(integrator,'odeint')
     if size(CI,1) > 1
         phi = cell(size(CI,1),1);
         parfor kk = 1:size(CI,1)
-            phi{kk} = mod(odeintEvents(nx*N,Tspan(2),dt,CI(kk,:),Vth,nx),1);
+            phi{kk} = mod(odeintEvents(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
         end
     else
-        phi = mod(odeintEvents(nx*N,Tspan(2),dt,CI,Vth,nx),1);
+        phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
     end
     cd(oldFolder);
     rmdir(nameFolder,'s');
