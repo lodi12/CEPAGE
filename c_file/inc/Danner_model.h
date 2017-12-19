@@ -40,7 +40,7 @@ private:
 public:
     Danner_model();
     Danner_model(double C, double gNaP, double ENa, double gl, double  El, double VhalfM, double km, double Vhalfh, double kh, double tau0, double tauMax, double VhalfTau, double kTau, double Di, double gSynE, double EsynE);
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~Danner_model();
     

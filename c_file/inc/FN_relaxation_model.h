@@ -28,7 +28,7 @@ public:
     FN_relaxation_model();
     FN_relaxation_model(double I,double eps);
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~FN_relaxation_model();
 

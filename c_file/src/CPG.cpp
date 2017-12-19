@@ -16,44 +16,51 @@
 CPG::CPG()
 {
     this->N = 0;
+    this->Ninh = 0;
+    this->Nexc = 0;
+    
     this->neuroni = (neuron_model **)malloc(0);
-    this->g_in = (double *)malloc(0);
-    this->g_ex = (double *)malloc(0);
+
     this->g_el = (double *)malloc(0);
+    
+    this->inhSyn = new SynStruct*[0];
+    this->excSyn = new SynStruct*[0];
+    
     this->EsynIn = 0;
     this->EsynEx = 0;
-    this->inhActivation = (synapse_model **)malloc(0);
-    this->excActivation = (synapse_model **)malloc(0);
+
     
     this->firstState = (int *)malloc(0);
 }
 
-CPG::CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,double EsynIn, double EsynEx, synapse_model **inhActivation, synapse_model **excActivation )
+CPG::CPG(int N,neuron_model **neuroni, double *g_el,double EsynIn, double EsynEx, t_SynStruct **inhSyn, t_SynStruct **excSyn )
 {
     int i,index;
+    
     this->N = N;
+    this->Ninh = sizeof(inhSyn)/sizeof(t_SynStruct *);
+    this->Nexc = sizeof(excSyn)/sizeof(t_SynStruct *);
+    
+    
     this->neuroni = neuroni;
+    
     this->EsynIn = EsynIn;
     this->EsynEx = EsynEx;
 
     
-    this->g_in = (double *)malloc(N*N*sizeof(double));
-    this->g_ex = (double *)malloc(N*N*sizeof(double));
     this->g_el = (double *)malloc(N*N*sizeof(double));
     
     for(i=0;i<N*N;i++)
     {
-        this->g_in[i] = g_in[i];
-        this->g_ex[i] = g_ex[i];
         this->g_el[i] = g_el[i];
     }
     
 
-    this->inhActivation = inhActivation;
-    this->excActivation = excActivation;
+    this->inhSyn = inhSyn;
+    this->excSyn = excSyn;
 
     
-    this->firstState = (int *)malloc(N*sizeof(int)+2*N*N*sizeof(int));
+    this->firstState = (int *)malloc((N+Ninh+Nexc)*sizeof(int));
     
     index = 0;
     for(i=0;i<N;i++)
@@ -62,73 +69,114 @@ CPG::CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,
         index += (this->neuroni[i])->getnx();
     }
     
-    for(i=0;i<N*N;i++)
+    for(i=0;i<Ninh;i++)
     {
         this->firstState[N+i] = index;
-        index += (this->inhActivation[i])->getnx();
+        index += ((this->inhSyn[i])->activationFunction)->getnx();
     }
     
-    for(i=0;i<N*N;i++)
+    for(i=0;i<Nexc;i++)
     {
         this->firstState[N+N*N+i] = index;
-        index += (this->excActivation[i])->getnx();
+        index += ((this->excSyn[i])->activationFunction)->getnx();
     }
     
     
 }
 
 
-void CPG::getXdot(double t, double *x, double *xdot,double Iext)
+void CPG::getXdot(double t, double *x, double *xdot,double *Iext)
 {
-    int N = this->N;
     int i,j,matrInd;
+    int inhIndex, excIndex;
+    double Isyn,Vi,Vj;
+    
+    int N = this->N;
+    int Ninh = this->Ninh;
+    int Nexc = this->Nexc;
+    
+    t_SynStruct *tmp;
+
+    
     neuron_model **neuroni = this->neuroni;
     
-    double *g_in = this->g_in;
-    double *g_ex = this->g_ex;
     double *g_el = this->g_el;
     double EsynIn = this->EsynIn;
     double EsynEx = this->EsynEx;
     
-    synapse_model **inhActivation = this->inhActivation;
-    synapse_model **excActivation = this->excActivation;
+    
+    t_SynStruct **inhSyn = this->inhSyn;
+    t_SynStruct **excSyn = this->excSyn;
     
     int *Vindex = this->firstState;
     
-    double Isyn,Vi,Vj;
+
     
     /* Compute neurons differentials */
+    
+    inhIndex = 0;
+    excIndex = 0;
+    
     for(i=0;i<N;i++)
     {
         Isyn = 0;
         Vi = x[Vindex[i]];
         
+        if(inhIndex < Ninh)
+        {
+            while(inhSyn[inhIndex]->i == i)
+            {
+                Vj = x[Vindex[inhSyn[inhIndex]->j]];
+                Isyn += (inhSyn[inhIndex]->g)*(EsynIn-Vi)*((inhSyn[inhIndex]->activationFunction)->getActivation(Vj));
+                inhIndex++;
+            }
+        }
+        
+        if(excIndex < Nexc)
+        {
+            while(excSyn[excIndex]->i == i)
+            {
+                Vj = x[Vindex[excSyn[excIndex]->j]];
+                Isyn += (excSyn[excIndex]->g)*(EsynIn-Vi)*((excSyn[excIndex]->activationFunction)->getActivation(Vj));
+                excIndex++;
+            }
+        }
+        
         for(j=0;j<N;j++)
         {
             matrInd = i*N+j;
             
-            Vj = x[Vindex[j]];
-            if(g_in[matrInd] != 0)
+            
+           /* if(g_in[matrInd] != 0)
                 Isyn += g_in[matrInd]*(EsynIn-Vi)*(inhActivation[matrInd]->getActivation(Vj));
             
             if(g_ex[matrInd] != 0)   
                 Isyn += g_ex[matrInd]*(EsynEx-Vi)*(excActivation[matrInd]->getActivation(Vj));
-            
+            */
             if(g_el[matrInd] != 0)
+            {
+                Vj = x[Vindex[j]];
                 Isyn += g_el[matrInd]*(Vj-Vi);
+            }
             
         }
         
-        neuroni[i]->getXdot(t,x+Vindex[i],xdot+Vindex[i],Isyn);
+
+        neuroni[i]->getXdot(t,x+Vindex[i],xdot+Vindex[i],&Isyn);
     }
     
     
     /* Compute synapses */
-    for(i=0;i<N*N;i++)
+    for(i=0;i<Ninh;i++)
     {
-        inhActivation[i]->getXdot(t,x+Vindex[N+i],xdot+Vindex[N+i]);
-        excActivation[i]->getXdot(t,x+Vindex[N+N*N+i],xdot+Vindex[N+N*N+i]);
+        (inhSyn[i]->activationFunction)->getXdot(t,x+Vindex[N+i],xdot+Vindex[N+i]);
     }
+   
+    for(i=0;i<Nexc;i++)
+    {
+        (excSyn[i]->activationFunction)->getXdot(t,x+Vindex[N+Ninh+i],xdot+Vindex[N+Ninh+i]);
+    }
+    
     
     
     
@@ -151,15 +199,22 @@ bool CPG::getResetConditions(double *x)
         }
     }
     
-    for(i=0;i<N*N;i++)
+    for(i=0;i<Ninh;i++)
     {
-        if(((inhActivation[i])->getResetConditions(x+Vindex[N+i])) || ((excActivation[i])->getResetConditions(x+Vindex[N+N*N+i])))
+        if((inhSyn[i]->activationFunction)->getResetConditions(x+Vindex[N+i]))
         {
             return true;
             break;
         }
     }
-    
+    for(i=0;i<Nexc;i++)
+    {
+        if ((excSyn[i]->activationFunction)->getResetConditions(x+Vindex[N+Ninh+i]))
+        {
+            return true;
+            break;
+        }
+    }
     
     return false;
 }
@@ -180,16 +235,18 @@ void CPG::resetStates(double *x)
     }
     
     
-     for(i=0;i<N*N;i++)
+    for(i=0;i<Ninh;i++)
     {
-        if((inhActivation[i])->getResetConditions(x+Vindex[N+i]))
+        if((inhSyn[i]->activationFunction)->getResetConditions(x+Vindex[N+i]))
         {
-            (inhActivation[i])->resetStates(x+Vindex[N+i]);
+            (inhSyn[i]->activationFunction)->resetStates(x+Vindex[N+i]);
         }
-        
-        if((excActivation[i])->getResetConditions(x+Vindex[N+N*N+i]))
+    }
+    for(i=0;i<Nexc;i++)
+    {
+        if ((excSyn[i]->activationFunction)->getResetConditions(x+Vindex[N+Ninh+i]))
         {
-            (excActivation[i])->resetStates(x+Vindex[N+N*N+i]);
+            (excSyn[i]->activationFunction)->resetStates(x+Vindex[N+Ninh+i]);
         }
     }
     
@@ -206,8 +263,7 @@ void CPG::getFirstIndex(int *firstIndex)
 
 CPG::~CPG() 
 {
-    free(this->g_in);
-    free(this->g_ex);
+    
     free(this->g_el);
  
 }

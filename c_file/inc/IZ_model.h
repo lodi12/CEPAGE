@@ -32,7 +32,7 @@ public:
     IZ_model();
     IZ_model(double a, double b, double c, double d, double I, double gL, double El);
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     
     bool getResetConditions(double *x);

@@ -56,7 +56,7 @@ Danner_model::Danner_model(double C, double gNaP, double ENa, double gl, double 
 }
 
 
-void Danner_model::getXdot(double t, double *x, double *xdot,double Iext)
+void Danner_model::getXdot(double t, double *x, double *xdot,double *Iext)
 {
     double nx = this->nx;
     double C = this->C;
@@ -83,7 +83,7 @@ void Danner_model::getXdot(double t, double *x, double *xdot,double Iext)
     double hInf = 1.0/(1+exp((V-Vhalfh)/kh));
     double Idrive = gSynE*(V-EsynE)*Di;
     xdot[1] = 1.0/tauH*(hInf-h);
-    xdot[0] = 1.0/C*(-gl*(V-El)-gNaP*m*h*(V-ENa)-Idrive+Iext);
+    xdot[0] = 1.0/C*(-gl*(V-El)-gNaP*m*h*(V-ENa)-Idrive+Iext[0]);
     
 }
 

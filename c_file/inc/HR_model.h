@@ -29,7 +29,7 @@ public:
     HR_model();
     HR_model(double b, double I, double mu, double s, double x_rest);
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~HR_model();
 
