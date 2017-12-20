@@ -37,7 +37,7 @@ x0 = [0 0];
 Tspan = [0 1000];
 
 % Choose integrator and set options
-opt.integrator = 'odeint';
+opt.integrator = 'eulero';
 opt.integratorOptions.dt = 0.001;
 
 % Run simulation
@@ -69,9 +69,10 @@ x0 = [0 0 -50 0];
 Tspan = [0 10000];
 
 % Choose integrator and set options
-opt.integrator = 'eulero';
+opt.integrator = 'odeint';
 opt.integratorOptions.dt = 0.001;
+opt.Vth = -60;
 % Run simulation
 
 [T2,X2] = netw.simplot(Tspan,x0,opt);
-
+% phi = netw.getPhaseRepresentation(Tspan,x0,opt);

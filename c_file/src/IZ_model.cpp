@@ -66,8 +66,11 @@ bool IZ_model::getResetConditions(double *x)
 
 void IZ_model::resetStates(double *x)
 {
-    x[0] = this->c;
-    x[1] += this->d;
+    if(this->getResetConditions(x))
+    {
+        x[0] = this->c;
+        x[1] += this->d;
+    }
     return;
 }
 
