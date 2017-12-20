@@ -14,7 +14,7 @@
 #ifndef NEURON_MODEL_H
 #define NEURON_MODEL_H
 
-#include "dynSys.h"
+#include "dynSys.hpp"
 
 class neuron_model : public dynSys{
     

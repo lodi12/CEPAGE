@@ -14,7 +14,7 @@
 #ifndef DANNER_MODEL_H
 #define DANNER_MODEL_H
 
-#include "neuron_model.h"
+#include "neuron_model.hpp"
 #include <math.h>
 
 class Danner_model : public neuron_model {

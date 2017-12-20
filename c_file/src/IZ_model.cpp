@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 10:06 AM
  */
 
-#include "../inc/IZ_model.h"
+#include "../inc/IZ_model.hpp"
 
 IZ_model::IZ_model() 
 {

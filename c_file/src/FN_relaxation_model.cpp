@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 9:48 AM
  */
 
-#include "../inc/FN_relaxation_model.h"
+#include "../inc/FN_relaxation_model.hpp"
 
 FN_relaxation_model::FN_relaxation_model() 
 {

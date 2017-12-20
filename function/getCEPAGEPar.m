@@ -1,2 +1,2 @@
 function CEPAGEPar = getCEPAGEPar()
-CEPAGEPar.boostDir = '/data/lodi/boostInstallationFolder';
+CEPAGEPar.boostDir = '/home/teo/boostLibrary';

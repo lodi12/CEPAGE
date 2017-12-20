@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 10:33 AM
  */
 
-#include "../inc/Danner_model.h"
+#include "../inc/Danner_model.hpp"
 
 Danner_model::Danner_model()
 {

@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 11:27 AM
  */
 
-#include "../inc/dynSys.h"
+#include "../inc/dynSys.hpp"
 
 
 

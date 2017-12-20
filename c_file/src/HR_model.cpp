@@ -11,7 +11,7 @@
  * Created on 14 maggio 2017, 19.31
  */
 
-#include "../inc/HR_model.h"
+#include "../inc/HR_model.hpp"
 
 HR_model::HR_model()
 {

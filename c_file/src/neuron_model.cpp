@@ -11,7 +11,7 @@
  * Created on 14 maggio 2017, 19.28
  */
 
-#include "../inc/neuron_model.h"
+#include "../inc/neuron_model.hpp"
 
 int neuron_model::getnx() 
 {

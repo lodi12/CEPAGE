@@ -14,7 +14,7 @@
 #ifndef HR_MODEL_H
 #define HR_MODEL_H
 
-#include "neuron_model.h"
+#include "neuron_model.hpp"
 
 class HR_model : public neuron_model {
     

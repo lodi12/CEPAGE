@@ -14,9 +14,9 @@
 #ifndef CPG_H
 #define CPG_H
 
-#include "dynSys.h"
-#include "neuron_model.h"
-#include "synapse_model.h"
+#include "dynSys.hpp"
+#include "neuron_model.hpp"
+#include "synapse_model.hpp"
 
 #include "stdlib.h"
 #include "math.h"

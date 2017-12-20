@@ -11,7 +11,7 @@
  * Created on 14 maggio 2017, 19.31
  */
 
-#include "../inc/FTM_synapse_model.h"
+#include "../inc/FTM_synapse_model.hpp"
 
 FTM_synapse_model::FTM_synapse_model()
 {

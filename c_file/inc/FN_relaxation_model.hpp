@@ -16,7 +16,7 @@
 
 
 
-#include "neuron_model.h"
+#include "neuron_model.hpp"
 #include <math.h>
 class FN_relaxation_model : public neuron_model {
     

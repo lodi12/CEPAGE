@@ -1,6 +1,6 @@
 #include "mex.h"
 #include "math.h"
-#include "vectorField.h"
+#include "vectorField.hpp"
 #include <stdio.h>
 /* The gateway function */
 void mexFunction( int nlhs, mxArray *plhs[],
@@ -89,17 +89,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
     for(i=1;i<nStep;i++)
     {
                 
-        vectorField->getXdot(0,oldState,dx,0);
+        vectorField->getXdot(currentT,oldState,dx,0);
         currentT += dt;
 
         for(j=0;j<Nstati;j++)
             currentState[j] = oldState[j]+dt*dx[j];
         
         
-        if (vectorField->getResetConditions(currentState))
-        {
-            vectorField->resetStates(currentState);
-        }
+
+        vectorField->resetStates(currentState);
+
 
          
         for(j=0;j<N;j++)
@@ -151,5 +150,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mxFree(eventMatrix[j]);
     }
     mxFree(eventMatrix);
-    
+    mxFree(firstIndex);
 }

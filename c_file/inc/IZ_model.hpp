@@ -15,7 +15,7 @@
 #define IZ_MODEL_H
 
 
-#include "neuron_model.h"
+#include "neuron_model.hpp"
 
 class IZ_model : public neuron_model {
     

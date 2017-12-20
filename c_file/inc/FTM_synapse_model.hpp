@@ -14,7 +14,7 @@
 #ifndef FTM_SYNAPSE_MODEL_H
 #define FTM_SYNAPSE_MODEL_H
 
-#include "synapse_model.h"
+#include "synapse_model.hpp"
 #include <math.h>
 class FTM_synapse_model : public synapse_model {
     

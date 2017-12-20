@@ -136,7 +136,7 @@ if strcmp(integrator,'eulero')
     %     mex -c vectorField.c;
     
     fout = fopen('vectorField.cpp','w');
-    fprintf(fout,'#include "vectorField.h"\n');
+    fprintf(fout,'#include "vectorField.hpp"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
     fprintf(fout,[object.getCbuilder,';\n}']);
     fclose(fout);
@@ -193,7 +193,7 @@ elseif strcmp(integrator,'odeint')
     %     mex -c vectorField.cpp;
     
     fout = fopen('vectorField.cpp','w');
-    fprintf(fout,'#include "vectorField.h"\n');
+    fprintf(fout,'#include "vectorField.hpp"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
     fprintf(fout,[object.getCbuilder,';\n}']);
     fclose(fout);

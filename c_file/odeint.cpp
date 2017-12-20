@@ -1,6 +1,6 @@
 #include "mex.h"
 #include "math.h"
-#include "vectorField.h"
+#include "vectorField.hpp"
 #include <boost/serialization/array_wrapper.hpp>
 #include <boost/numeric/odeint.hpp>
 #include <vector>
@@ -46,10 +46,8 @@ struct push_back_state_and_time
             xC[i] = x[i];
 
 
-        if (vectorField->getResetConditions(xC))
-        {
-            vectorField->resetStates(xC);
-        }
+        vectorField->resetStates(xC);
+
 
         for(i=0;i<Nstati;i++)
             x[i] = xC[i];

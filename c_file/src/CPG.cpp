@@ -11,7 +11,7 @@
  * Created on 16 maggio 2017, 18.41
  */
 
-#include "../inc/CPG.h"
+#include "../inc/CPG.hpp"
 
 CPG::CPG()
 {

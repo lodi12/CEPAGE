@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 10:21 AM
  */
 
-#include "../inc/ML_model.h"
+#include "../inc/ML_model.hpp"
 
 ML_model::ML_model() 
 {

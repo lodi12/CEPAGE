@@ -11,7 +11,7 @@
  * Created on July 12, 2017, 10:33 AM
  */
 
-#include "../inc/HH_model.h"
+#include "../inc/HH_model.hpp"
 
 HH_model::HH_model() 
 {

@@ -11,7 +11,7 @@
  * Created on 14 maggio 2017, 19.28
  */
 
-#include "../inc/synapse_model.h"
+#include "../inc/synapse_model.hpp"
 
 
 int synapse_model::getnx() 

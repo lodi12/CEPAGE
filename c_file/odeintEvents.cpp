@@ -1,6 +1,6 @@
 #include "mex.h"
 #include "math.h"
-#include "vectorField.h"
+#include "vectorField.hpp"
 #include <boost/serialization/array_wrapper.hpp>
 #include <boost/numeric/odeint.hpp>
 #include <vector>
@@ -54,10 +54,9 @@ struct push_back_events
             xC[i] = x[i];
         
         
-        if (vectorField->getResetConditions(xC))
-        {
-            vectorField->resetStates(xC);
-        }
+
+        vectorField->resetStates(xC);
+
         
         for(i=0;i<Nstati;i++)
             x[i] = xC[i];    
@@ -190,4 +189,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(eventMatrix);
     mxFree(xC);
     mxFree(dxC);
+    
+    mxFree(firstIndex);
 }

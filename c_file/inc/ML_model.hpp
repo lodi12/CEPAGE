@@ -14,7 +14,7 @@
 #ifndef ML_MODEL_H
 #define ML_MODEL_H
 
-#include "neuron_model.h"
+#include "neuron_model.hpp"
 #include <math.h>
 class ML_model : public neuron_model {
     
