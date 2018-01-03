@@ -150,7 +150,7 @@ classdef CPG
                             end
                             
                             object.inhActivation{i,j} = act{i,j};
-                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act{i,j}.getnx;
                             ii = ii+1;
                         end
                     end
@@ -177,7 +177,7 @@ classdef CPG
                             end
                             
                             object.excActivation{i,j} = act{i,j};
-                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act.getnx;
+                            object.incrementalIndexState(N+ii) = object.incrementalIndexState(N+ii-1)+act{i,j}.getnx;
                             ii = ii+1;
                         end
                     end
