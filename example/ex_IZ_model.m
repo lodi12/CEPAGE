@@ -63,13 +63,13 @@ synapse = FTM_synapse_model(nu,theta);
 netw = CPG(N,neuron,g_in,g_ex,g_el,EsynIn,EsynEx,synapse,synapse);
 
 % Set starting condition
-x0 = [0 0 -50 0];
+x0 = [-60 0 0 0.5];
 
 % Set simulation time
-Tspan = [0 10000];
+Tspan = [0 300];
 
 % Choose integrator and set options
-opt.integrator = 'odeint';
+opt.integrator = 'eulero';
 opt.integratorOptions.dt = 0.001;
 opt.Vth = -60;
 % Run simulation

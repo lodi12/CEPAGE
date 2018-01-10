@@ -154,6 +154,15 @@ disp('Done.')
 disp(' ')
 
 
+status = savepath();
+if status
+    warning on
+    warning('Path cannot be saved. You will need to reinstall the toolbox after restarting MATLAB');
+else
+    disp('Path succesfully saved')
+end
+disp(' ')
+
 disp(' ')
 disp('Installation complete.');
 

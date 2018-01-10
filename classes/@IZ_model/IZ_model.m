@@ -5,7 +5,7 @@ classdef IZ_model < neuron_model
     % The Neuron is modeld as follow:
     %   _
     %  |
-    %  | dv/dt = 0.04*v^2+5*v+140-u+I+gL(v-EL)-I_{ext}
+    %  | dv/dt = 0.04*v^2+5*v+140-u+I-gL(v-EL)-I_{ext}
     % <
     %  | du/dt = a*(b*v-u);
     %  |_-

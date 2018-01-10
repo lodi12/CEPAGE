@@ -51,7 +51,7 @@ EL = object.EL;
 v = x(1);
 u = x(2);
 
-x_dot(1,1) = 0.04*v^2+5*v+140-u+I+gL*(v-EL)+Isyn;
+x_dot(1,1) = 0.04*v^2+5*v+140-u+I-gL*(v-EL)+Isyn;
 x_dot(2,1) = a*(b*v-u);
 
     

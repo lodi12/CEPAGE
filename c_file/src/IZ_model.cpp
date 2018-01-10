@@ -50,7 +50,7 @@ void IZ_model::getXdot(double t, double *x, double *xdot,double Iext)
     double u = x[1];
             
     
-    xdot[0] = 0.04*v*v+5*v+140-u+I+gL*(v-El)+Iext;
+    xdot[0] = 0.04*v*v+5*v+140-u+I-gL*(v-El)+Iext;
     xdot[1] = a*(b*v-u);
     
     
