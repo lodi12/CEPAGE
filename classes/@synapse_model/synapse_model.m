@@ -39,6 +39,7 @@ classdef synapse_model
         xnames = cell(0); % States name
         modelName = '';
         isContinuous = false;
+        delays = [];
     end
     
     methods (Abstract)
@@ -61,7 +62,8 @@ classdef synapse_model
         names = getStateNames(object);
         [position,isterminal,direction] = getResetConditions(object,t,y);
         [xreset,object] = resetStates(object,t,x);
-        cont = is_continuous(object)
+        cont = is_continuous(object);
+        del = is_delayed(object);
     end
     
 end

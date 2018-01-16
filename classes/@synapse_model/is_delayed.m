@@ -1,14 +1,8 @@
-function x_dot = getXdot(object,t,x,varargin)
-% getXdot    Computes the derivative of the state 
+function del = is_delayed(object)
+% is_delayed   Report if the model is time delayed
 %
-%  x_dot = getXdot(object,t,x)
-%   compute the time derivative of the model at time instant t, in state x
-%   and with I_{ext} = 0;
+% del = is_delayed(object)
 %
-%  x_dot = getXdot(object,t,x,I_{ext})
-%   compute the time derivative of the model at time instant t, in state x
-%   and with I_{ext} specified by the user;
-
 % Contributors:
 %
 % Matteo Lodi (matteo.lodi@edu.unige.it)
@@ -32,29 +26,8 @@ function x_dot = getXdot(object,t,x,varargin)
 % 59 Temple Place, Suite 330,
 % Boston, MA  02111-1307  USA
 
-% synapsis input
-Isyn = 0;
-if nargin == 4
-    if isscalar(varargin{end})
-        Isyn = varargin{end};
-    end
+del = false;
+if numel(object.delays) > 0
+    del = true;
 end
-
-
-
-a = object.a;
-b = object.b;
-
-I = object.I;
-
-gL = object.gL;
-EL = object.EL;
-
-v = x(1);
-u = x(2);
-
-x_dot(1,1) = 0.04*v^2+5*v+140-u+I-gL*(v-EL)+Isyn;
-x_dot(2,1) = a*(b*v-u);
-
-    
 end

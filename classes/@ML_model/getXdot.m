@@ -33,11 +33,13 @@ function x_dot = getXdot(object,t,x,varargin)
 % Boston, MA  02111-1307  USA
 
 % synapsis input
-if nargin == 3
-    Isyn = 0;
-else
-    Isyn = varargin{1};
+Isyn = 0;
+if nargin == 4
+    if isscalar(varargin{end})
+        Isyn = varargin{end};
+    end
 end
+
 
 
 gK = 8;

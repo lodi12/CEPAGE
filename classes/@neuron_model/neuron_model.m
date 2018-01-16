@@ -46,6 +46,7 @@ classdef neuron_model
         xnames = cell(0); % States name
         modelName = '';
         isContinuous = false;
+        delays = [];
     end
     
     methods (Abstract)
@@ -72,9 +73,10 @@ classdef neuron_model
         
         
         
-        [position,isterminal,direction] = getResetConditions(object,t,y);
-        [xreset,object] = resetStates(object,t,x);
+        [position,isterminal,direction] = getResetConditions(object,t,y,varargin);
+        [xreset,object] = resetStates(object,t,x,varargin);
         cont = is_continuous(object);
+        del = is_delayed(object);
     end
     
 end
