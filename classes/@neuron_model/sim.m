@@ -310,14 +310,14 @@ else
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'odeint.o']);
+        copyfile([cpth,'odeint_delayed.o']);
         
         boostDir = getCEPAGEPar();
         boostDir = boostDir.boostDir;
         
         eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        eval(['mex -silent odeint.o vectorField.o  -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE']);
-        [T,X] = odeint(nx,Tspan(2)-Tspan(1),dt,x0);
+        eval(['mex -silent odeint_delayed.o vectorField.o  -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE']);
+        [T,X] = odeint_delayed(nx,Tspan(2)-Tspan(1),dt,x0,x0_del);
         T = T+Tspan(1);
         cd(oldFolder);
         rmdir('tmp','s');

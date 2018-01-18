@@ -150,6 +150,7 @@ disp('eulero integrators compiled')
 
 if useBoost
     eval(['mex -c odeint.cpp -silent -L. -lCEPAGE -I"',boostDir,'/include" -L"',boostDir,'/lib"']);
+    eval(['mex -c odeint_delayed.cpp -silent -L. -lCEPAGE -I"',boostDir,'/include" -L"',boostDir,'/lib"']);
     eval(['mex -c odeintEvents.cpp -silent -L. -lCEPAGE -I"',boostDir,'/include" -L"',boostDir,'/lib"']);
     disp('boost integrators compiled')
     warning on
