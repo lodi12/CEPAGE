@@ -13,10 +13,26 @@
 
 #include "../inc/dynSys.hpp"
 
-
-
 void dynSys::getFirstIndex(int *firstIndex)
 {
     firstIndex = (int *)malloc(sizeof(int));
     firstIndex[0] = 0;
+}
+
+int dynSys::getNdelay()
+{
+    return Ndelay;
+}
+
+void dynSys::getDelays(double *del)
+{
+    int i;
+    for(i=0;i<Ndelay;i++)
+        del[i] = this->delays[i];
+}
+
+
+void dynSys::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
+{
+    this->getXdot(t,x,xdot,Iext);
 }

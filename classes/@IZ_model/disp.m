@@ -30,6 +30,7 @@ function disp(object)
 % Boston, MA  02111-1307  USA
 disp('Izhikevich neuron model.');
 disp('The Neuron is modeld as follow');
+disp('   _');
 disp('  |');
 disp('  | dv/dt = 0.04*v^2+5*v+140-u+I+gL(v-EL)-I_{ext}');
 disp(' <');

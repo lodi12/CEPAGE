@@ -124,17 +124,6 @@ if strcmp(integrator,'eulero')
     dt = integratorOptions.dt;
     cd(nameFolder);
     
-    %     totalMexString = '';
-    %
-    %     for i=1:N
-    %         nm = ['neuron',num2str(i)];
-    %         object.neurons{i}.generateC(nm);
-    %         eval(['mex -c ',nm,'.c'])
-    %         totalMexString = [totalMexString,' ',nm,'.o'];
-    %     end
-    %     object.generateC('vectorField');
-    %     mex -c vectorField.c;
-    
     fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.hpp"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
@@ -161,6 +150,14 @@ if strcmp(integrator,'eulero')
     cd(oldFolder);
     rmdir(nameFolder,'s');
 elseif strcmp(integrator,'odeint')
+    
+    useBoost = getCEPAGEPar();
+    useBoost = useBoost.useBoost;
+    
+    if ~useBoost
+        error('Boost c++ integrator is not installed');
+    end
+    
     if ~isfield(integratorOptions,'dt')
         dt = 1e-3;
     else
@@ -178,19 +175,6 @@ elseif strcmp(integrator,'odeint')
     
     mkdir(nameFolder);
     cd(nameFolder);
-    
-    %     totalMexString = '';
-    %
-    %     for i=1:N
-    %         nm = ['neuron',num2str(i)];
-    %         object.neurons{i}.generateC(nm);
-    %         movefile([nm,'.c'],[nm,'.cpp']);
-    %         eval(['mex -c ',nm,'.cpp'])
-    %         totalMexString = [totalMexString,' ',nm,'.o'];
-    %     end
-    %     object.generateC('vectorField');
-    %     movefile('vectorField.c','vectorField.cpp');
-    %     mex -c vectorField.cpp;
     
     fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.hpp"\n');
@@ -223,7 +207,7 @@ else
     
     if ~object.is_continuous
         error(['Pahse representation employing MATLAB integrator '...
-        'can be used only for continuous system']);
+            'can be used only for continuous system']);
     end
     
     Te = cell(size(CI,1),1);
@@ -273,42 +257,4 @@ end
 
 
 end
-
-
-
-% N = object.N;
-% nx = object.neurons{1}.getnx;
-%
-% nc = size(X,2);
-%
-% if nc ~= N*nx
-%     error(['X must have ',num2str(N*nx),'columns']);
-% end
-%
-% ii = (0:N-1)*nx+1;
-%
-% X = X(:,ii);
-%
-% Te = cell(N,1);
-%
-% low = X < Vth;
-% up = X >= Vth;
-%
-% len = Inf;
-%
-% for i=1:N
-%     evDif = low(1:end-1,i)-up(2:end,i);
-%     evSum = low(1:end-1,i)+up(2:end,i);
-%     Te{i} = T(evDif == 0 & evSum == 2);
-%     len = min(len,numel(Te{i}));
-% end
-%
-% T1 = Te{1}(end)-Te{1}(end-1);
-%
-% phi = cell(N-1,1);
-%
-% for i=2:N
-%     phi{i-1} = mod((Te{i}(1:len)-Te{1}(1:len))/T1,1);
-% end
-
 

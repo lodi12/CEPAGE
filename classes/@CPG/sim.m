@@ -104,12 +104,12 @@ if strcmp(integrator,'eulero')
     dt = integratorOptions.dt;
     cd('tmp');
     
-     fout = fopen('vectorField.cpp','w');
+    fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.hpp"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
     fprintf(fout,[object.getCbuilder,';\n}']);
     fclose(fout);
-
+    
     cpth = getcpath();
     copyfile([cpth,'eulero.o']);
     
@@ -127,7 +127,7 @@ if strcmp(integrator,'eulero')
         end
     else
         X = eulero(object.totState,nStep,dt,x0);
-	X = X';
+        X = X';
         T = Ti;
     end
     cd(oldFolder);
@@ -135,6 +135,14 @@ if strcmp(integrator,'eulero')
     
     
 elseif strcmp(integrator,'odeint')
+    
+    useBoost = getCEPAGEPar();
+    useBoost = useBoost.useBoost;
+    
+    if ~useBoost
+        error('Boost c++ integrator is not installed');
+    end
+    
     if ~isfield(integratorOptions,'dt')
         dt = 1e-3;
     else
@@ -143,19 +151,19 @@ elseif strcmp(integrator,'odeint')
     oldFolder = cd;
     mkdir('tmp');
     cd('tmp');
-
+    
     
     fout = fopen('vectorField.cpp','w');
     fprintf(fout,'#include "vectorField.hpp"\n');
     fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
     fprintf(fout,[object.getCbuilder,';\n}']);
     fclose(fout);
-
+    
     cpth = getcpath();
     copyfile([cpth,'odeint.o']);
     boostDir = getCEPAGEPar();
     boostDir = boostDir.boostDir;
-      
+    
     eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
     str = ['mex -silent odeint.o vectorField.o -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE'];
     eval(str);
@@ -175,7 +183,7 @@ elseif strcmp(integrator,'odeint')
     rmdir('tmp','s');
     
 else
-%     integratorOptions.Jacobian = @object.getJacobian;    
+    %     integratorOptions.Jacobian = @object.getJacobian;
     integratorOptions.Events = @object.getResetConditions;
     
     currentT = Tspan(1);

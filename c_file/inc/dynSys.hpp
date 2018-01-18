@@ -18,12 +18,21 @@
 
 class dynSys 
 {
+    
+protected:
+        int Ndelay = 0;
+        double *delays = {};
+    
 public:
     virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
+    virtual void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
     virtual bool getResetConditions(double *x) = 0;
     virtual void resetStates(double *x) = 0;
 
     virtual void getFirstIndex(int *firstIndex);
+    
+    int getNdelay();
+    void getDelays(double *del);
     
 
 };

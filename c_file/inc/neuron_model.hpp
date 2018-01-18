@@ -20,12 +20,15 @@ class neuron_model : public dynSys{
     
     protected:
         int nx;
+
     
     
 public:
     virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
     virtual bool getResetConditions(double *x);
     virtual void resetStates(double *x);
+    
+    
     int getnx();
 
 };

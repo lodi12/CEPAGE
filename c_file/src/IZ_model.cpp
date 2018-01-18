@@ -53,7 +53,6 @@ void IZ_model::getXdot(double t, double *x, double *xdot,double Iext)
     xdot[0] = 0.04*v*v+5*v+140-u+I-gL*(v-El)+Iext;
     xdot[1] = a*(b*v-u);
     
-    
 }
 
 bool IZ_model::getResetConditions(double *x)

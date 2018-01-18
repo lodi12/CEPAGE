@@ -119,6 +119,15 @@ if ~object.is_delayed
         X = X';
         T = linspace(Tspan(1),Tspan(2),nStep);
     elseif strcmp(integrator,'odeint')
+        
+        useBoost = getCEPAGEPar();
+        useBoost = useBoost.useBoost;
+        
+        if ~useBoost
+            error('Boost c++ integrator is not installed');
+        end
+        
+        
         if ~isfield(integratorOptions,'dt')
             dt = 1e-3;
         else
@@ -262,18 +271,26 @@ else
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'eulero.o']);
+        copyfile([cpth,'eulero_delayed.o']);
         
         
         eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        eval(['mex -silent eulero.o vectorField.o -L"',cpth,'" -lCEPAGE']);
+        eval(['mex -silent eulero_delayed.o vectorField.o -L"',cpth,'" -lCEPAGE']);
         nStep = (Tspan(2)-Tspan(1))/dt;
-        X = eulero(nx,nStep,dt,x0);
+        X = eulero_delayed(nx,nStep,dt,x0,x0_del');
         cd(oldFolder);
         rmdir('tmp','s');
         X = X';
         T = linspace(Tspan(1),Tspan(2),nStep);
     elseif strcmp(integrator,'odeint')
+        
+        useBoost = getCEPAGEPar();
+        useBoost = useBoost.useBoost;
+        
+        if ~useBoost
+            error('Boost c++ integrator is not installed');
+        end
+        
         if ~isfield(integratorOptions,'dt')
             dt = 1e-3;
         else
