@@ -8,6 +8,7 @@ classdef synapse_model
     %
     % synapse_model methods:
     %   getActivation - Compute the activation function
+    %   getXdot       - Compute the synapse states derivative
     %
     % See also FTM_synapse_model
     %
@@ -44,7 +45,7 @@ classdef synapse_model
     
     methods (Abstract)
         % Other methods
-        act = getActivation(object,Vpre);    
+        act = getActivation(object,Vpre,varargin);    
         x_dot = getXdot(object,t,x,varargin);
         str = getCbuilder(object);
     end
@@ -60,10 +61,11 @@ classdef synapse_model
         
         nx = getnx(object);
         names = getStateNames(object);
-        [position,isterminal,direction] = getResetConditions(object,t,y);
-        [xreset,object] = resetStates(object,t,x);
+        [position,isterminal,direction] = getResetConditions(object,t,y,varargin);
+        [xreset,object] = resetStates(object,t,x,varargin);
         cont = is_continuous(object);
         del = is_delayed(object);
+        del = getDelays(object)
     end
     
 end

@@ -239,16 +239,16 @@ else
                 if (all(size(x0_del') == [nDelay,nx]))
                     x0_del = x0_del';
                 else
-                    x0_del = zeors(nDelay,nx);
+                    x0_del = zeros(nx,nDelay);
                 end
             end
             
         else
-            x0_del = zeros(nDelay,nx);
+            x0_del = zeros(nx,nDelay);
         end
         
     else
-        x0_del = zeros(nDelay,nx);
+        x0_del = zeros(nx,nDelay);
     end
     
     
@@ -328,10 +328,10 @@ else
         
         currentT = Tspan(1);
         
-        delays = object.delays;
+        delays = object.delays(:);
         
         
-        T = [-delays(end:-1:1),0]';
+        T = [-delays(end:-1:1);0]';
         X = [x0_del(:,end:-1:1),x0(:)]';
         
         
@@ -349,13 +349,17 @@ else
             Ttmp = sol.x';
             Xtmp = sol.y';
             
-            [x0,object] = object.resetStates(Ttmp(end),Xtmp(end,:));
-            
             T(end) = [];
             X(end,:) = [];
             
-            T = [T;Ttmp];
+            T = [T(:);Ttmp(:)];
             X = [X;Xtmp];
+            
+            Zpast = object.hystoryFun(T(end)-delays,T,X);
+            
+            [x0,object] = object.resetStates(Ttmp(end),Xtmp(end,:),Zpast);
+            
+            
             
             currentT = T(end);
             

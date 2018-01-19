@@ -79,6 +79,13 @@ classdef CPG
         inhActivation = {};
         excActivation = {};
         
+        
+        delays = [];
+        
+        delayIndexNeur = {};
+        delayInhSyn = {};
+        delayExcSyn = {};
+        
         totState = 0;
         incrementalIndexState = [];
         
@@ -187,10 +194,57 @@ classdef CPG
                 
                 object.totState = object.incrementalIndexState(end)-1;
                 
+                % Set up delays
+                
+                delays_  = [];
+                
+                for i=1:N
+                    delays_ = [delays_;object.neurons{i}.getDelays()];
+                end
+                
+                for i=1:N
+                    for j=1:N
+                        delays_ = [delays_;object.inhActivation{i,j}.getDelays()];
+                    end
+                end
+                
+                for i=1:N
+                    for j=1:N
+                        delays_ = [delays_;object.excActivation{i,j}.getDelays()];
+                    end
+                end
+                
+                
+                object.delays = sort(unique(delays_));
+                
+                
+                object.delayIndexNeur = cell(N,1);
+                object.delayInhSyn = cell(N,N);
+                object.delayExcSyn = cell(N,N);
+                
+                for i=1:N
+                    object.delayIndexNeur{i} = find(ismember(object.delays, object.neurons{i}.getDelays()));
+                end
+                
+                for i=1:N
+                    for j=1:N
+                        object.delayInhSyn{i,j} = find(ismember(object.delays, object.inhActivation{i,j}.getDelays()));
+                    end
+                end
+                
+                for i=1:N
+                    for j=1:N
+                        object.delayExcSyn{i,j} = find(ismember(object.delays, object.excActivation{i,j}.getDelays()));
+                    end
+                end
+                
+                
+                
+                
             end
         end
         
-        x_dot = getXdot(object,t,x,Z,Isynglobale);
+        x_dot = getXdot(object,t,x,varargin);
         J = getJacobian(object,t,x);
         str = getCbuilder(object);
         plot(object);
@@ -211,8 +265,8 @@ classdef CPG
         object = set_g_el(object,g_el);
         [w_in,w_ex,w_el,M_in,M_ex,M_el] = computeMw(object,PRC,limitCycle,varargin);
         
-         [position,isterminal,direction] = getResetConditions(object,t,y);
-        [xreset,object] = resetStates(object,t,x,ie);
+        [position,isterminal,direction] = getResetConditions(object,t,y,varargin);
+        [xreset,object] = resetStates(object,t,x,ie,varargin);
         cont = is_continuous(object)
     end
     

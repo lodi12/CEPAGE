@@ -77,6 +77,7 @@ classdef neuron_model
         [xreset,object] = resetStates(object,t,x,varargin);
         cont = is_continuous(object);
         del = is_delayed(object);
+        del = getDelays(object)
     end
     
 end

@@ -34,7 +34,7 @@ function x_dot = getXdot(object,t,x,varargin)
 
 % synapsis input
 Isyn = 0;
-if nargin == 4
+if nargin >= 4
     if isscalar(varargin{end})
         Isyn = varargin{end};
     end

@@ -70,7 +70,7 @@ classdef FTM_synapse_model < synapse_model
             end
         end
         
-        act = getActivation(object,Vpre);    
+        act = getActivation(object,Vpre,varargin);    
         str = getCbuilder(object);
         disp(object);
         x_dot = getXdot(object,t,x,varargin);

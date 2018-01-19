@@ -1,4 +1,4 @@
-function act = getActivation(object,Vpre)
+function act = getActivation(object,Vpre,varargin)
 % getActivation    Computes the activation function of the synapse 
 %
 %  act = getActivation(object,Vpre)
