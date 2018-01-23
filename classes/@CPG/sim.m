@@ -297,10 +297,10 @@ if strcmp(integrator,'eulero')
     fclose(fout);
     
     cpth = getcpath();
-    copyfile([cpth,'eulero.o']);
+    copyfile([cpth,'eulero_delayed.o']);
     
     eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-    eval(['mex -silent eulero.o vectorField.o -L"',cpth,'" -lCEPAGE']);
+    eval(['mex -silent eulero_delayed.o vectorField.o -L"',cpth,'" -lCEPAGE']);
     
     nStep = (Tspan(2)-Tspan(1))/dt;
     Ti = linspace(Tspan(1),Tspan(2),nStep);
@@ -308,11 +308,11 @@ if strcmp(integrator,'eulero')
         X = cell(size(x0,1),1);
         T = cell(size(x0,1),1);
         parfor kk = 1:size(x0,1)
-            X{kk} = eulero(object.totState,nStep,dt,x0(kk,:))';
+            X{kk} = eulero_delayed(object.totState,nStep,dt,x0(kk,:),x0_del')';
             T{kk} = Ti;
         end
     else
-        X = eulero(object.totState,nStep,dt,x0);
+        X = eulero_delayed(object.totState,nStep,dt,x0,x0_del');
         X = X';
         T = Ti;
     end

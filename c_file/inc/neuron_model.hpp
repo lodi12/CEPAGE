@@ -25,6 +25,8 @@ class neuron_model : public dynSys{
     
 public:
     virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
+    virtual void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
+
     virtual bool getResetConditions(double *x);
     virtual void resetStates(double *x);
     

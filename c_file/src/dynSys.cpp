@@ -36,3 +36,14 @@ void dynSys::getXdot(double t, double *x, double *xdot,double Iext,double **Xpre
 {
     this->getXdot(t,x,xdot,Iext);
 }
+
+
+bool dynSys::getResetConditions(double *x,double **Xprec)
+{
+    return this->getResetConditions(x);
+}
+    
+void dynSys::resetStates(double *x,double **Xprec)
+{
+    this->resetStates(x);
+}

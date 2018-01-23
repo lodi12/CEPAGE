@@ -21,12 +21,28 @@ class synapse_model
 protected:    
     int nx;
     
+    int Ndelay = 0;
+    double *delays = {};
+    
 public:
-    virtual double getActivation(double Vpre) = 0;
-    virtual void getXdot(double t, double *x, double *xdot) = 0;
-    virtual bool getResetConditions(double *x);
-    virtual void resetStates(double *x);
+    virtual double getActivation(double *x,double Vpre, double *VpreOld);
+    virtual double getActivation(double *x,double Vpre) = 0;
+    
+    virtual void getXdot(double t, double *x, double *xdot, double Vpre, double **xold);
+    virtual void getXdot(double t, double *x, double *xdot, double Vpre) = 0;
+    
+    //virtual bool getResetConditions(double *x, double Vpre, double *VpreOld);
+    virtual bool getResetConditions(double *x, double Vpre);
+    
+    //virtual void resetStates(double *x, double Vpre, double *VpreOld);
+    virtual void resetStates(double *x, double Vpre);
+    
     int getnx();
+    
+    
+    int getNdelay();
+    void getDelays(double *del);
+    
 };
 
 #endif /* NEURON_MODEL_H */

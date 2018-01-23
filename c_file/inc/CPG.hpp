@@ -14,12 +14,17 @@
 #ifndef CPG_H
 #define CPG_H
 
+
+#include <vector>
+
 #include "dynSys.hpp"
 #include "neuron_model.hpp"
 #include "synapse_model.hpp"
 
 #include "stdlib.h"
 #include "math.h"
+
+using namespace std;
 
 class CPG : public dynSys {
 private:
@@ -34,15 +39,29 @@ private:
     synapse_model **inhActivation;
     synapse_model **excActivation;
     
+    vector<int> **neuronDelaysIndex;
+    vector<int> **inhSynDelaysIndex;
+    vector<int> **excSynDelaysIndex;
+ 
+    int *NneuronDelaysIndex;
+    int *NinhSynDelaysIndex;
+    int *NexcSynDelaysIndex;
+    
     int *firstState;
     
     
 public:
     CPG();
-    CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,double EsynIn, double EsynEx, synapse_model **inhActivation, synapse_model **excActivation ); 
+    CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,double EsynIn, double EsynEx, synapse_model **inhActivation, synapse_model **excActivation , double networkDelays[]); 
     
+    
+    void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
     void getXdot(double t, double *x, double *xdot,double Iext);
+    
+    //bool getResetConditions(double *x,double **Xprec);
     bool getResetConditions(double *x);
+    
+    //void resetStates(double *x,double **Xprec);
     void resetStates(double *x);
     
     void getFirstIndex(int *firstIndex);

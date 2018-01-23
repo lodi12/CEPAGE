@@ -26,8 +26,8 @@ public:
     FTM_synapse_model();
     FTM_synapse_model(double nu,double theta);
     
-    void getXdot(double t, double *x, double *xdot);
-    double getActivation(double Vpre);
+    void getXdot(double t, double *x, double *xdot,double Vpre);
+    double getActivation(double *x, double Vpre);
     
     virtual ~FTM_synapse_model();
 

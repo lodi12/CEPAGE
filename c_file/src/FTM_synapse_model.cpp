@@ -28,7 +28,7 @@ FTM_synapse_model::FTM_synapse_model(double nu, double theta)
 }
 
 
-double FTM_synapse_model::getActivation(double Vpre)
+double FTM_synapse_model::getActivation(double *x,double Vpre)
 {
     double nu = this->nu;
     double theta = this->theta;    
@@ -37,7 +37,7 @@ double FTM_synapse_model::getActivation(double Vpre)
 }
 
 
-void FTM_synapse_model::getXdot(double t, double *x, double *xdot)
+void FTM_synapse_model::getXdot(double t, double *x, double *xdot,double Vpre)
 {
     
 }

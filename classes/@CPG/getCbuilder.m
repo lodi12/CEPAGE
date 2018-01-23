@@ -93,7 +93,22 @@ excActivation = object.excActivation;
     
     str = [str,'\n\n'];
     
-    str = [str,sprintf('*vf = new CPG(%d,neuron,g_in, g_ex, g_el,%e,%e,inhSynapses,excSynapses )', ...
+    
+    str2 = 'double delays[] ={';
+    
+    if numel(object.delays > 0)
+    for i=1:numel(object.delays)-1
+        str2 = [str2,num2str(object.delays(i)),','];
+    end
+    str2 = [str2,num2str(object.delays(end))];
+    end
+    
+    
+    
+    
+    
+    str = [str,str2,'};\n\n'];
+    str = [str,sprintf('*vf = new CPG(%d,neuron,g_in, g_ex, g_el,%e,%e,inhSynapses,excSynapses,delays)', ...
         object.N,object.EsynIn,object.EsynEx)];
     
     

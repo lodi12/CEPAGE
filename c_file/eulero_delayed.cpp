@@ -2,8 +2,6 @@
 #include "math.h"
 #include "vectorField.hpp"
 
-#include <stdio.h>
-
 /* The gateway function */
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
@@ -31,7 +29,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     double *x0Del;
     
-    double **xDel;
+    double **xDel; // xDel matrix is Ndelay x Nstates
     
     /**********************************/
     
@@ -56,7 +54,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     vectorField->getDelays(delays);
     
-    
     delayIndex = (int *)mxMalloc(Ndelay*sizeof(int));
 
     
@@ -72,17 +69,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
         
     plhs[0] = mxCreateDoubleMatrix(Nstati,nStep,mxREAL);
     
-    xDel = (double **)mxMalloc(Nstati*sizeof(double *));
+    xDel = (double **)mxMalloc(Ndelay*sizeof(double *));
 
-    for(i=0;i<Nstati;i++)
+    for(i=0;i<Ndelay;i++)
     {
-        xDel[i] = (double *)mxMalloc(Ndelay*sizeof(double));
-        for(j=0;j<Ndelay;j++)
+        xDel[i] = (double *)mxMalloc(Nstati*sizeof(double));
+        for(j=0;j<Nstati;j++)
         {
-            xDel[i][j] = x0Del[i*Ndelay+j];
+            xDel[i][j] = x0Del[i*Nstati+j];
         }
     }
-    
 
     /* inizializzare indici delay a valori negativi */
     for(i=0;i<Ndelay;i++)
@@ -94,14 +90,15 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     t = 0;
     
+    
     for(i=1;i<nStep;i++)
     {
         
 
         ptr = xOutMatrix+i*Nstati;
+        
         vectorField->getXdot(t,ptr-Nstati,dx,0,xDel);
  
-        
         for(j=0;j<Nstati;j++)
         {
             ptr[j] = ptr[j-Nstati]+dt*dx[j];
@@ -122,15 +119,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
                 }
         
         t+=dt;
-        
+                
     }
-    
-    
-    for(i=0;i<Nstati;i++)
+        
+    for(i=0;i<Ndelay;i++)
             mxFree(xDel[i]);
-    
+
     mxFree(xDel);
-    
+
     mxFree(dx);
     mxFree(delays);
     mxFree(delayIndex);
