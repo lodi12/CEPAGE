@@ -78,7 +78,7 @@ end
 
 [M, ~] = size(deltaPhi);
 
-CI = zeros(M,neur.getnx*N);
+CI = zeros(M,object.totState);
 
 
 eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
