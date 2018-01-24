@@ -10,5 +10,6 @@
 #include "FN_relaxation_model.hpp"
 
 #include "FTM_synapse_model.hpp"
+#include "alpha_synapse_model.hpp"
 
 #include "CPG.hpp"

@@ -1,15 +1,18 @@
-function x_dot = getXdot(object,t,x,varargin)
-% getXdot    Computes the derivative of the state 
+function act = getActivation(object,Vpre,varargin)
+% getActivation    Computes the activation function of the synapse
 %
+%  act = getActivation(object,Vpre)
+%   compute the time activation function of the synapse; Vpre is the
+%   pre-synaptic neuron membrane potential
 %
-%  x_dot = getXdot(object,t,x)
-%   compute the time derivative of the model 
+%  act = getActivation(object,Vpre,x)
+%   compute the time activation function of the synapse; Vpre is the
+%   pre-synaptic neuron membrane potential and x are the synapse states
 %
-%  x_dot = getXdot(object,t,x,Vpre)
-%   compute the time derivative of the model 
-%
-%  x_dot = getXdot(object,t,x,Vpre,Xold,Vpreold)
-%   compute the time derivative of the model 
+%  act = getActivation(object,Vpre,x,VpreOld)
+%   compute the time activation function of the synapse; Vpre is the
+%   pre-synaptic neuron membrane potential, x are the synapse states and
+%   VpreOld is the delayed pre-synaptic neuron membrane potential
 
 % Contributors:
 %
@@ -34,4 +37,11 @@ function x_dot = getXdot(object,t,x,varargin)
 % 59 Temple Place, Suite 330,
 % Boston, MA  02111-1307  USA
 
-x_dot = zeros(0);
+if nargin == 3
+    x = varargin{1}(1);
+else
+	x = 0;
+end
+
+act = x;
+end

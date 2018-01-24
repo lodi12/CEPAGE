@@ -1,3 +1,4 @@
+
 function x_dot = getXdot(object,t,x,varargin)
 % getXdot    Computes the derivative of the state
 %
@@ -87,15 +88,24 @@ if numel(delays) == 0
         %Compute exc syn
         for j=1:N
             if g_ex(i,j) ~= 0
+                
+                synBeginI = incrementalIndexState(N+N*N+(i-1)*N+j);
+                synEndI = incrementalIndexState(N+N*N+(i-1)*N+j+1)-1;
+                
                 otherI = incrementalIndexState(j);
-                Isyn = Isyn + g_ex(i,j)*(-x(beginI)+EsynEx)*excActivation{i,j}.getActivation(x(otherI));
+                Isyn = Isyn + g_ex(i,j)*(-x(beginI)+EsynEx)*excActivation{i,j}.getActivation(x(otherI),x(synBeginI:synEndI));
+                x_dot(synBeginI:synEndI) = excActivation{i,j}.getXdot(t,x(synBeginI:synEndI),x(otherI));
             end
         end
         %compute inh syn
         for j=1:N
             if g_in(i,j) ~= 0
+                synBeginI = incrementalIndexState(N+(i-1)*N+j);
+                synEndI = incrementalIndexState(N+(i-1)*N+j+1)-1;
                 otherI = incrementalIndexState(j);
-                Isyn = Isyn + g_in(i,j)*(-x(beginI)+EsynIn)*inhActivation{i,j}.getActivation(x(otherI));
+                Isyn = Isyn + g_in(i,j)*(-x(beginI)+EsynIn)*inhActivation{i,j}.getActivation(x(otherI),x(synBeginI:synEndI));
+                x_dot(synBeginI:synEndI) = inhActivation{i,j}.getXdot(t,x(synBeginI:synEndI),x(otherI));
+                
             end
         end
         %compute el syn
@@ -110,30 +120,6 @@ if numel(delays) == 0
         
         x_dot(beginI:endI) = neurons{i}.getXdot(t,x(beginI:endI),Isyn);
     end
-    
-    
-    % Update synapses states
-    ii = 2;
-    for i=1:N
-        for j=1:N
-            beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
-            
-            x_dot(beginI:endI) = inhActivation{i,j}.getXdot(t,x(beginI:endI));
-            ii = ii+1;
-        end
-    end
-    
-    for i=1:N
-        for j=1:N
-            beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
-            
-            x_dot(beginI:endI) = excActivation{i,j}.getXdot(t,x(beginI:endI));
-            ii = ii+1;
-        end
-    end
-    
     
     
 else
@@ -152,17 +138,31 @@ else
         %Compute exc syn
         for j=1:N
             if g_ex(i,j) ~= 0
+                
+                synBeginI = incrementalIndexState(N+N*N+(i-1)*N+j);
+                synEndI = incrementalIndexState(N+N*N+(i-1)*N+j+1)-1;
+                
                 otherI = incrementalIndexState(j);
                 Ztmp = Z(otherI,delayExcSyn{i,j});
-                Isyn = Isyn + g_ex(i,j)*(-x(beginI)+EsynEx)*excActivation{i,j}.getActivation(x(otherI),Ztmp);
+                Isyn = Isyn + g_ex(i,j)*(-x(beginI)+EsynEx)*excActivation{i,j}.getActivation(x(otherI),x(synBeginI:synEndI),Ztmp);
+                
+                Ztmp2 = Z(:,delayExcSyn{i,j});
+                x_dot(synBeginI:synEndI) = excActivation{i,j}.getXdot(t,x(synBeginI:synEndI),x(otherI),Ztmp2,Ztmp);
+                
             end
         end
         %compute inh syn
         for j=1:N
             if g_in(i,j) ~= 0
+                
+                synBeginI = incrementalIndexState(N+(i-1)*N+j);
+                synEndI = incrementalIndexState(N+(i-1)*N+j+1)-1;
+                
                 otherI = incrementalIndexState(j);
                 Ztmp = Z(otherI,delayInhSyn{i,j});
-                Isyn = Isyn + g_in(i,j)*(-x(beginI)+EsynIn)*inhActivation{i,j}.getActivation(x(otherI),Ztmp);
+                Isyn = Isyn + g_in(i,j)*(-x(beginI)+EsynIn)*inhActivation{i,j}.getActivation(x(otherI),x(synBeginI:synEndI),Ztmp);
+                Ztmp2 = Z(:,delayInhSyn{i,j});
+                x_dot(synBeginI:synEndI) = inhActivation{i,j}.getXdot(t,x(synBeginI:synEndI),x(otherI),Ztmp2,Ztmp);
             end
         end
         %compute el syn
@@ -179,35 +179,6 @@ else
         
         x_dot(beginI:endI) = neurons{i}.getXdot(t,x(beginI:endI),Ztmp,Isyn);
     end
-    
-    
-    % Update synapses states
-    ii = 2;
-    for i=1:N
-        for j=1:N
-            beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
-            
-            Ztmp = Z(:,delayInhSyn{i,j});
-            
-            x_dot(beginI:endI) = inhActivation{i,j}.getXdot(t,x(beginI:endI),Ztmp);
-            ii = ii+1;
-        end
-    end
-    
-    for i=1:N
-        for j=1:N
-            beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
-            
-            Ztmp = Z(:,delayExcSyn{i,j});
-            
-            x_dot(beginI:endI) = excActivation{i,j}.getXdot(t,x(beginI:endI),Ztmp);
-            ii = ii+1;
-        end
-    end
-    
-    
     
 end
 

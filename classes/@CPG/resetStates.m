@@ -28,14 +28,16 @@ if numel(object.delays) == 0
     
     
     % synapses reset
-    ii = 2;
+    ii = 1;
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
+            
+            otherI = incrementalIndexState(j);
             
             if any(ie >= beginI & ie <= endI)
-                xreset(beginI:endI) = inhActivation{i}.resetStates(t,x(beginI:endI));
+                xreset(beginI:endI) = inhActivation{i,j}.resetStates(t,x(beginI:endI),x(otherI));
             else
                 xreset(beginI:endI) = x(beginI:endI);
             end
@@ -46,9 +48,12 @@ if numel(object.delays) == 0
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
+            
+            otherI = incrementalIndexState(j);
+            
             if any(ie >= beginI & ie <= endI)
-                xreset(beginI:endI) = excActivation{i}.resetStates(t,x(beginI:endI));
+                xreset(beginI:endI) = excActivation{i,j}.resetStates(t,x(beginI:endI),x(otherI));
             else
                 xreset(beginI:endI) = x(beginI:endI);
             end
@@ -75,6 +80,7 @@ else
         beginI = incrementalIndexState(i);
         endI = incrementalIndexState(i+1)-1;
         
+        
         if any(ie >= beginI & ie <= endI)
             Ztmp = Z(:,delayIndexNeur{i});
             xreset(beginI:endI) = neurons{i}.resetStates(t,x(beginI:endI),Ztmp);
@@ -85,15 +91,17 @@ else
     
     
     % synapses reset
-    ii = 2;
+    ii = 1;
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
             
-            if any(ie >= beginI & ie <= endI)        
-                Ztmp = Z(:,delayInhSyn{i,j});
-                xreset(beginI:endI) = inhActivation{i}.resetStates(t,x(beginI:endI),Ztmp);
+            otherI = incrementalIndexState(j);
+            
+            if any(ie >= beginI & ie <= endI)
+                Ztmp = Z(otherI,delayInhSyn{i,j});
+                xreset(beginI:endI) = inhActivation{i,j}.resetStates(t,x(beginI:endI),x(otherI),Ztmp);
             else
                 xreset(beginI:endI) = x(beginI:endI);
             end
@@ -104,10 +112,13 @@ else
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
+            
+            otherI = incrementalIndexState(j);
+            
             if any(ie >= beginI & ie <= endI)
-                Ztmp = Z(:,delayExcSyn{i,j});
-                xreset(beginI:endI) = excActivation{i}.resetStates(t,x(beginI:endI),Ztmp);
+                Ztmp = Z(otherI,delayExcSyn{i,j});
+                xreset(beginI:endI) = excActivation{i,j}.resetStates(t,x(beginI:endI),x(otherI),Ztmp);
             else
                 xreset(beginI:endI) = x(beginI:endI);
             end

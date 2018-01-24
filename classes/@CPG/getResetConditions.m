@@ -22,19 +22,22 @@ if ~object.is_delayed
         beginI = incrementalIndexState(i);
         endI = incrementalIndexState(i+1)-1;
         
+
         
-        [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = neurons{i}.getResetConditions(t,y(beginI:endI),varargin);
+        [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = neurons{i}.getResetConditions(t,y(beginI:endI));
     end
     
     
     % synapses reset
-    ii = 2;
+    ii = 1;
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
             
-            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = inhActivation{i}.getResetConditions(t,y(beginI:endI),varargin);
+                    otherI = incrementalIndexState(j);
+            
+            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = inhActivation{i,j}.getResetConditions(t,y(beginI:endI),y(otherI));
             ii = ii+1;
         end
     end
@@ -42,9 +45,11 @@ if ~object.is_delayed
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
             
-            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = excActivation{i}.getResetConditions(t,y(beginI:endI),varargin);
+            otherI = incrementalIndexState(j);
+            
+            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = excActivation{i,j}.getResetConditions(t,y(beginI:endI),y(otherI));
             ii = ii+1;
         end
     end
@@ -77,17 +82,19 @@ else
     
     
     % synapses reset
-    ii = 2;
+    ii = 1;
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
             
-            Ztmp = Z(:,delayInhSyn{i,j});
+            otherI = incrementalIndexState(j);
+            
+            Ztmp = Z(otherI,delayInhSyn{i,j});
             
             
             
-            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = inhActivation{i}.getResetConditions(t,y(beginI:endI),Ztmp);
+            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = inhActivation{i,j}.getResetConditions(t,y(beginI:endI),x(otherI),Ztmp);
             ii = ii+1;
         end
     end
@@ -95,11 +102,13 @@ else
     for i=1:N
         for j=1:N
             beginI = incrementalIndexState(N+ii);
-            endI = incrementalIndexState(N+ii)-1;
+            endI = incrementalIndexState(N+ii+1)-1;
+            
+            otherI = incrementalIndexState(j);
             
             Ztmp = Z(:,delayExcSyn{i,j});
             
-            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = excActivation{i}.getResetConditions(t,y(beginI:endI),Ztmp);
+            [position(beginI:endI),isterminal(beginI:endI),direction(beginI:endI)] = excActivation{i,j}.getResetConditions(t,y(beginI:endI),x(otherI),Ztmp);
             ii = ii+1;
         end
     end

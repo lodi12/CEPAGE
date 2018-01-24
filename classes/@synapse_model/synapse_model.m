@@ -61,8 +61,8 @@ classdef synapse_model
         
         nx = getnx(object);
         names = getStateNames(object);
-        [position,isterminal,direction] = getResetConditions(object,t,y,varargin);
-        [xreset,object] = resetStates(object,t,x,varargin);
+        [position,isterminal,direction] = getResetConditions(object,t,x,Vpre)
+        [xreset,object] = resetStates(object,t,x,Vpre)
         cont = is_continuous(object);
         del = is_delayed(object);
         del = getDelays(object)

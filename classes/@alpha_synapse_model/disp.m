@@ -1,15 +1,8 @@
-function x_dot = getXdot(object,t,x,varargin)
-% getXdot    Computes the derivative of the state 
+function disp(object)
+% disp   Displays some information about the FTM_synapse_model object
 %
-%
-%  x_dot = getXdot(object,t,x)
-%   compute the time derivative of the model 
-%
-%  x_dot = getXdot(object,t,x,Vpre)
-%   compute the time derivative of the model 
-%
-%  x_dot = getXdot(object,t,x,Vpre,Xold,Vpreold)
-%   compute the time derivative of the model 
+% disp(OBJ)
+% OBJ is the FTM_synapse_model object.
 
 % Contributors:
 %
@@ -33,5 +26,19 @@ function x_dot = getXdot(object,t,x,varargin)
 % Free Software Foundation, Inc.,
 % 59 Temple Place, Suite 330,
 % Boston, MA  02111-1307  USA
+disp('Alpha synapse model.');
+disp('The synapse activation function is');
+disp('   ');
+disp('x');
+disp('   ');
+disp('The state equations is:');
+disp(' alpha*(1-s)*1/(1+exp(-nu*(Vpre-theta))-beta*s');
 
-x_dot = zeros(0);
+disp(' ');
+disp('Parameters value:');
+disp(['     alpha = ',num2str(object.al)]);
+disp(['      beta = ',num2str(object.beta)]);
+disp(['     theta = ',num2str(object.theta)]);
+disp(['     nu    = ',num2str(object.nu)]);
+
+end

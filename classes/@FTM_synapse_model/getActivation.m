@@ -5,6 +5,15 @@ function act = getActivation(object,Vpre,varargin)
 %   compute the time activation function of the synapse; Vpre is the
 %   pre-synaptic neuron membrane potential
 %
+%  act = getActivation(object,Vpre,x)
+%   compute the time activation function of the synapse; Vpre is the
+%   pre-synaptic neuron membrane potential and x are the synapse states
+%
+%  act = getActivation(object,Vpre,x,VpreOld)
+%   compute the time activation function of the synapse; Vpre is the
+%   pre-synaptic neuron membrane potential, x are the synapse states and
+%   VpreOld is the delayed pre-synaptic neuron membrane potential
+%
 
 % Contributors:
 %
