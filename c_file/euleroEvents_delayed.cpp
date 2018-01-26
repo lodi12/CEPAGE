@@ -93,7 +93,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         if(maxDelays < delays[i])
             maxDelays = delays[i];
     
-    maxMemory = (int)(maxDelays*dt);
+    maxMemory = (int)(maxDelays/dt);
     
     delayIndex = (int *)mxMalloc(Ndelay*sizeof(int));
     
@@ -146,27 +146,22 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
 
     currentT = 0;
-        
+            
     
     for(i=1;i<nStep;i++)
-    {
-                
-        
+    {        
         for(j=0;j<Ndelay;j++)
             xDel[j] = xDelTot[delayIndex[j]];
 
-
-        
         vectorField->getXdot(currentT,oldState,dx,0,xDel);
         currentT += dt;
 
         for(j=0;j<Nstati;j++)
             currentState[j] = oldState[j]+dt*dx[j];
         
-
+        
         vectorField->resetStates(currentState);
-
-         
+                 
         for(j=0;j<N;j++)
         {
 
