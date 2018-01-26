@@ -144,6 +144,7 @@ end
 mex -silent  -c eulero.cpp -L. -lCEPAGE
 mex -silent  -c eulero_delayed.cpp -L. -lCEPAGE
 mex -silent -c euleroEvents.cpp -L. -lCEPAGE
+mex -silent -c euleroEvents_delayed.cpp -L. -lCEPAGE
 disp('eulero integrators compiled')
 
 

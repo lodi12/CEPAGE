@@ -62,8 +62,9 @@ CPG::CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,
     
     
     
-    this->Ndelay = sizeof(networkDelays)/sizeof(double) + 1;
+    this->Ndelay = sizeof(networkDelays)/sizeof(double);
     
+        
     this->delays = (double *)malloc(Ndelay*sizeof(double));
     
     for(i=0;i<Ndelay;i++)
@@ -265,7 +266,6 @@ void CPG::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
         {
             Xprec_[k] = Xprec[neuronDelaysIndex[i]->at(k)]+Vindex[i];
         }
-              printf("%d -> %f\n",i,Isyn);
 
         neuroni[i]->getXdot(t,x+Vindex[i],xdot+Vindex[i],Isyn,Xprec_);
     }

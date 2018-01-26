@@ -49,212 +49,444 @@ function phi = getPhaseRepresentation(object,Tspan,CI,varargin )
 % 59 Temple Place, Suite 330,
 % Boston, MA  02111-1307  USA
 
-possibleSolver = {'ode45','ode23','ode113','ode15s','ode23s','ode23t','ode23tb','eulero','odeint'};
 
-% nx = object.neurons{1}.getnx;
-N  = object.N;
-Nstati = object.totState;
-
-if size(CI,2) ~= Nstati
-    error(['initial conditions must be a vector with ',num2str(Nstati),' columns']);
-end
-
-if numel(Tspan) == 1
-    Tspan(2) = Tspan(1);
-    Tspan(1) = 0;
-elseif numel(Tspan) > 2
-    error('Tspan must be a vector with two elements [Tstart, Tend]');
-end
-
-integrator = 'ode45';
-integratorOptions = odeset;
-
-if nargin == 4
-    if isfield(varargin{1},'integratorOptions')
-        integratorOptions = varargin{1}.integratorOptions;
-    end
-    if isfield(varargin{1},'integrator')
-        integrator = varargin{1}.integrator;
-    end
-end
-
-intOk = -1;
-for i=1:numel(possibleSolver)
-    if strcmp(integrator,possibleSolver{i})
-        intOk = 1;
-        break;
-    end
-end
-
-if intOk == -1
-    error('Choosen integrator not allowed');
-end
-
-
-Vth = 0;
-stopThreshold = eps;
-if nargin == 4
-    if isfield(varargin{1},'Vth')
-        Vth = varargin{1}.Vth;
-    end
-    if isfield(varargin{1},'stopThreshold')
-        stopThreshold = varargin{1}.stopThreshold;
-    end
-end
-
-
-
-
-
-if strcmp(integrator,'eulero')
-    if ~isfield(integratorOptions,'dt')
-        error('Integrator step dt must be provided when using eulero integrator');
-    end
-    oldFolder = cd;
+if ~object.is_delayed
     
-    ii = 0;
-    nameFolder = 'tmp';
+    possibleSolver = {'ode45','ode23','ode113','ode15s','ode23s','ode23t','ode23tb','eulero','odeint'};
     
-    while(exist(nameFolder,'dir') == 7)
-        ii = ii+1;
-        nameFolder = ['tmp',num2str(ii)];
+    % nx = object.neurons{1}.getnx;
+    N  = object.N;
+    Nstati = object.totState;
+    
+    if size(CI,2) ~= Nstati
+        error(['initial conditions must be a vector with ',num2str(Nstati),' columns']);
     end
     
-    mkdir(nameFolder);
-    dt = integratorOptions.dt;
-    cd(nameFolder);
+    if numel(Tspan) == 1
+        Tspan(2) = Tspan(1);
+        Tspan(1) = 0;
+    elseif numel(Tspan) > 2
+        error('Tspan must be a vector with two elements [Tstart, Tend]');
+    end
     
-    fout = fopen('vectorField.cpp','w');
-    fprintf(fout,'#include "vectorField.hpp"\n');
-    fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
-    fprintf(fout,[object.getCbuilder,';\n}']);
-    fclose(fout);
+    integrator = 'ode45';
+    integratorOptions = odeset;
     
-    cpth = getcpath();
-    copyfile([cpth,'euleroEvents.o']);
-    
-    eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-    str = ['mex euleroEvents.o vectorField.o -L',cpth,' -lCEPAGE'];
-    eval(str);
-    nStep = (Tspan(2)-Tspan(1))/dt;
-    
-    if size(CI,1) > 1
-        phi = cell(size(CI,1),1);
-        parfor kk = 1:size(CI,1)
-            phi{kk} = mod(euleroEvents(Nstati,nStep,dt,CI(kk,:),Vth,stopThreshold,N),1);
+    if nargin == 4
+        if isfield(varargin{1},'integratorOptions')
+            integratorOptions = varargin{1}.integratorOptions;
         end
-    else
-        phi = mod(euleroEvents(Nstati,nStep,dt,CI,Vth,stopThreshold,N),1);
+        if isfield(varargin{1},'integrator')
+            integrator = varargin{1}.integrator;
+        end
+    end
+    
+    intOk = -1;
+    for i=1:numel(possibleSolver)
+        if strcmp(integrator,possibleSolver{i})
+            intOk = 1;
+            break;
+        end
+    end
+    
+    if intOk == -1
+        error('Choosen integrator not allowed');
+    end
+    
+    
+    Vth = 0;
+    stopThreshold = eps;
+    if nargin == 4
+        if isfield(varargin{1},'Vth')
+            Vth = varargin{1}.Vth;
+        end
+        if isfield(varargin{1},'stopThreshold')
+            stopThreshold = varargin{1}.stopThreshold;
+        end
+    end
+    
+    
+    
+    
+    
+    if strcmp(integrator,'eulero')
+        if ~isfield(integratorOptions,'dt')
+            error('Integrator step dt must be provided when using eulero integrator');
+        end
+        oldFolder = cd;
         
-    end
-    cd(oldFolder);
-    rmdir(nameFolder,'s');
-elseif strcmp(integrator,'odeint')
-    
-    useBoost = getCEPAGEPar();
-    useBoost = useBoost.useBoost;
-    
-    if ~useBoost
-        error('Boost c++ integrator is not installed');
-    end
-    
-    if ~isfield(integratorOptions,'dt')
-        dt = 1e-3;
-    else
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
         dt = integratorOptions.dt;
-    end
-    oldFolder = cd;
-    
-    ii = 0;
-    nameFolder = 'tmp';
-    
-    while(exist(nameFolder,'dir') == 7)
-        ii = ii+1;
-        nameFolder = ['tmp',num2str(ii)];
-    end
-    
-    mkdir(nameFolder);
-    cd(nameFolder);
-    
-    fout = fopen('vectorField.cpp','w');
-    fprintf(fout,'#include "vectorField.hpp"\n');
-    fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
-    fprintf(fout,[object.getCbuilder,';\n}']);
-    fclose(fout);
-    
-    boostDir = getCEPAGEPar();
-    boostDir = boostDir.boostDir;
-    
-    cpth = getcpath();
-    copyfile([cpth,'odeintEvents.o']);
-    
-    eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-    str = ['mex odeintEvents.o vectorField.o -I',boostDir,'/include -L',boostDir,'/lib -L',cpth,' -lCEPAGE'];
-    eval(str);
-    
-    if size(CI,1) > 1
-        phi = cell(size(CI,1),1);
-        parfor kk = 1:size(CI,1)
-            phi{kk} = mod(odeintEvents(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
+        cd(nameFolder);
+        
+        fout = fopen('vectorField.cpp','w');
+        fprintf(fout,'#include "vectorField.hpp"\n');
+        fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
+        fprintf(fout,[object.getCbuilder,';\n}']);
+        fclose(fout);
+        
+        cpth = getcpath();
+        copyfile([cpth,'euleroEvents.o']);
+        
+        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
+        str = ['mex euleroEvents.o vectorField.o -L',cpth,' -lCEPAGE'];
+        eval(str);
+        nStep = (Tspan(2)-Tspan(1))/dt;
+        
+        if size(CI,1) > 1
+            phi = cell(size(CI,1),1);
+            parfor kk = 1:size(CI,1)
+                phi{kk} = mod(euleroEvents(Nstati,nStep,dt,CI(kk,:),Vth,stopThreshold,N),1);
+            end
+        else
+            phi = mod(euleroEvents(Nstati,nStep,dt,CI,Vth,stopThreshold,N),1);
+            
         end
+        cd(oldFolder);
+        rmdir(nameFolder,'s');
+    elseif strcmp(integrator,'odeint')
+        
+        useBoost = getCEPAGEPar();
+        useBoost = useBoost.useBoost;
+        
+        if ~useBoost
+            error('Boost c++ integrator is not installed');
+        end
+        
+        if ~isfield(integratorOptions,'dt')
+            dt = 1e-3;
+        else
+            dt = integratorOptions.dt;
+        end
+        oldFolder = cd;
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
+        
+        fout = fopen('vectorField.cpp','w');
+        fprintf(fout,'#include "vectorField.hpp"\n');
+        fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
+        fprintf(fout,[object.getCbuilder,';\n}']);
+        fclose(fout);
+        
+        boostDir = getCEPAGEPar();
+        boostDir = boostDir.boostDir;
+        
+        cpth = getcpath();
+        copyfile([cpth,'odeintEvents.o']);
+        
+        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
+        str = ['mex odeintEvents.o vectorField.o -I',boostDir,'/include -L',boostDir,'/lib -L',cpth,' -lCEPAGE'];
+        eval(str);
+        
+        if size(CI,1) > 1
+            phi = cell(size(CI,1),1);
+            parfor kk = 1:size(CI,1)
+                phi{kk} = mod(odeintEvents(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
+            end
+        else
+            phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
+        end
+        cd(oldFolder);
+        rmdir(nameFolder,'s');
+        
     else
-        phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
-    end
-    cd(oldFolder);
-    rmdir(nameFolder,'s');
-    
-else
-    
-    if ~object.is_continuous
-        error(['Pahse representation employing MATLAB integrator '...
-            'can be used only for continuous system']);
-    end
-    
-    Te = cell(size(CI,1),1);
-    ie = cell(size(CI,1),1);
-    eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
-    integratorOptions.Events = eventFun;
-    
-    
-    if size(CI,1) > 1
-        phi = cell(size(CI,1),1);
-    end
-    
-    for i=1:size(CI,1)
-        x0  = CI(i,:);
         
-        command = [integrator,'(@object.getXdot,[Tspan(1) Tspan(2)],x0,integratorOptions);'];
-        [~,~,Te,~,ie] = eval(command);
-        
-        
-        len = Inf;
-        
-        for n=1:N
-            len = min([len,sum(ie == n)]);
+        if ~object.is_continuous
+            error(['Pahse representation employing MATLAB integrator '...
+                'can be used only for continuous system']);
         end
         
-        phiTmp = zeros(len-1,N-1);
-        
-        T1 = Te(ie == 1);
-        
-        for n=2:N
-            Tn = Te(ie == n);
-            phiTmp(:,n-1) = mod((Tn(2:len)-T1(2:len))./(T1(2:len)-T1(1:len-1)),1);
-        end
+        Te = cell(size(CI,1),1);
+        ie = cell(size(CI,1),1);
+        eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
+        integratorOptions.Events = eventFun;
         
         
         if size(CI,1) > 1
-            phi{i} = phiTmp;
-        else
-            phi = phiTmp;
+            phi = cell(size(CI,1),1);
         end
+        
+        for i=1:size(CI,1)
+            x0  = CI(i,:);
+            
+            command = [integrator,'(@object.getXdot,[Tspan(1) Tspan(2)],x0,integratorOptions);'];
+            [~,~,Te,~,ie] = eval(command);
+            
+            
+            len = Inf;
+            
+            for n=1:N
+                len = min([len,sum(ie == n)]);
+            end
+            
+            phiTmp = zeros(len-1,N-1);
+            
+            T1 = Te(ie == 1);
+            
+            for n=2:N
+                Tn = Te(ie == n);
+                phiTmp(:,n-1) = mod((Tn(2:len)-T1(2:len))./(T1(2:len)-T1(1:len-1)),1);
+            end
+            
+            
+            if size(CI,1) > 1
+                phi{i} = phiTmp;
+            else
+                phi = phiTmp;
+            end
+            
+        end
+        
+        
         
     end
     
     
+else
     
-end
-
-
+    
+    possibleSolver = {'dde23','eulero','odeint'};
+    
+    % nx = object.neurons{1}.getnx;
+    N  = object.N;
+    Nstati = object.totState;
+    
+    if size(CI,2) ~= Nstati
+        error(['initial conditions must be a vector with ',num2str(Nstati),' columns']);
+    end
+    
+    if numel(Tspan) == 1
+        Tspan(2) = Tspan(1);
+        Tspan(1) = 0;
+    elseif numel(Tspan) > 2
+        error('Tspan must be a vector with two elements [Tstart, Tend]');
+    end
+    
+    integrator = 'dde23';
+    integratorOptions = ddeset;
+    
+    if nargin == 4
+        if isfield(varargin{1},'integratorOptions')
+            integratorOptions = varargin{1}.integratorOptions;
+        end
+        if isfield(varargin{1},'integrator')
+            integrator = varargin{1}.integrator;
+        end
+    end
+    
+    intOk = -1;
+    for i=1:numel(possibleSolver)
+        if strcmp(integrator,possibleSolver{i})
+            intOk = 1;
+            break;
+        end
+    end
+    
+    if intOk == -1
+        error('Choosen integrator not allowed');
+    end
+    
+    
+    Vth = 0;
+    stopThreshold = eps;
+    if nargin == 4
+        if isfield(varargin{1},'Vth')
+            Vth = varargin{1}.Vth;
+        end
+        if isfield(varargin{1},'stopThreshold')
+            stopThreshold = varargin{1}.stopThreshold;
+        end
+    end
+    
+    nDelay = numel(object.delays);
+    if nargin == 4
+        if isfield(varargin{1},'x0_delayed')
+            x0_del = varargin{1}.x0_delayed;
+            
+            if(any(size(x0_del) ~= [nDelay,object.totState]))
+                if (all(size(x0_del') == [nDelay,object.totState]))
+                    x0_del = x0_del';
+                else
+                    x0_del = zeros(object.totState,nDelay);
+                end
+            end
+            
+        else
+            x0_del = zeros(object.totState,nDelay);
+        end
+        
+    else
+        x0_del = zeros(object.totState,nDelay);
+    end
+    
+    
+    
+    if strcmp(integrator,'eulero')
+        if ~isfield(integratorOptions,'dt')
+            error('Integrator step dt must be provided when using eulero integrator');
+        end
+        oldFolder = cd;
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        dt = integratorOptions.dt;
+        cd(nameFolder);
+        
+        fout = fopen('vectorField.cpp','w');
+        fprintf(fout,'#include "vectorField.hpp"\n');
+        fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
+        fprintf(fout,[object.getCbuilder,';\n}']);
+        fclose(fout);
+        
+        cpth = getcpath();
+        copyfile([cpth,'euleroEvents_delayed.o']);
+        
+        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
+        str = ['mex euleroEvents_delayed.o vectorField.o -L',cpth,' -lCEPAGE'];
+        eval(str);
+        nStep = (Tspan(2)-Tspan(1))/dt;
+        
+        if size(CI,1) > 1
+            phi = cell(size(CI,1),1);
+            parfor kk = 1:size(CI,1)
+                phi{kk} = mod(euleroEvents_delayed(Nstati,nStep,dt,CI(kk,:),Vth,stopThreshold,N,x0_del),1);
+            end
+        else
+            phi = mod(euleroEvents_delayed(Nstati,nStep,dt,CI,Vth,stopThreshold,N,x0_del),1);
+            
+        end
+        cd(oldFolder);
+        rmdir(nameFolder,'s');
+    elseif strcmp(integrator,'odeint')
+        
+        useBoost = getCEPAGEPar();
+        useBoost = useBoost.useBoost;
+        
+        if ~useBoost
+            error('Boost c++ integrator is not installed');
+        end
+        
+        if ~isfield(integratorOptions,'dt')
+            dt = 1e-3;
+        else
+            dt = integratorOptions.dt;
+        end
+        oldFolder = cd;
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
+        
+        fout = fopen('vectorField.cpp','w');
+        fprintf(fout,'#include "vectorField.hpp"\n');
+        fprintf(fout,'void initVectorField(dynSys **vf)\n{\n');
+        fprintf(fout,[object.getCbuilder,';\n}']);
+        fclose(fout);
+        
+        boostDir = getCEPAGEPar();
+        boostDir = boostDir.boostDir;
+        
+        cpth = getcpath();
+        copyfile([cpth,'odeintEvents.o']);
+        
+        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
+        str = ['mex odeintEvents.o vectorField.o -I',boostDir,'/include -L',boostDir,'/lib -L',cpth,' -lCEPAGE'];
+        eval(str);
+        
+        if size(CI,1) > 1
+            phi = cell(size(CI,1),1);
+            parfor kk = 1:size(CI,1)
+                phi{kk} = mod(odeintEvents(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
+            end
+        else
+            phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
+        end
+        cd(oldFolder);
+        rmdir(nameFolder,'s');
+        
+    else
+        
+        if ~object.is_continuous
+            error(['Pahse representation employing MATLAB integrator '...
+                'can be used only for continuous system']);
+        end
+        
+        Te = cell(size(CI,1),1);
+        ie = cell(size(CI,1),1);
+        eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
+        integratorOptions.Events = eventFun;
+        
+        
+        if size(CI,1) > 1
+            phi = cell(size(CI,1),1);
+        end
+        
+        for i=1:size(CI,1)
+            x0  = CI(i,:);
+            
+            command = [integrator,'(@object.getXdot,[Tspan(1) Tspan(2)],x0,integratorOptions);'];
+            [~,~,Te,~,ie] = eval(command);
+            
+            
+            len = Inf;
+            
+            for n=1:N
+                len = min([len,sum(ie == n)]);
+            end
+            
+            phiTmp = zeros(len-1,N-1);
+            
+            T1 = Te(ie == 1);
+            
+            for n=2:N
+                Tn = Te(ie == n);
+                phiTmp(:,n-1) = mod((Tn(2:len)-T1(2:len))./(T1(2:len)-T1(1:len-1)),1);
+            end
+            
+            
+            if size(CI,1) > 1
+                phi{i} = phiTmp;
+            else
+                phi = phiTmp;
+            end
+            
+        end
+        
+        
+        
+    end
+    
+    
 end
 
