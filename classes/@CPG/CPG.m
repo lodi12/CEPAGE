@@ -250,7 +250,7 @@ classdef CPG
         plot(object);
         disp(object);
         CI = getCIfromPhi(object,deltaPhi,Ttrans);
-        phi = getPhaseRepresentationFromTrack(object,T,X,Vth)
+        [Tphi,phi] = getPhaseRepresentationFromTrack(object,T,X,Vth)
         [Te,ie] = getPhaseRepresentation(object,Tspan,CI,varargin )
         [deltaPhiMatrix, deltaPhiDot] = computeApproxVectorField(object,PRC,orbit,varargin)
         writeApproxVectorField(w_in,w_ex,w_el,M_in,M_ex,M_el,varargin);

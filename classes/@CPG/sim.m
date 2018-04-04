@@ -133,6 +133,9 @@ if ~object.is_delayed
             X = X';
             T = Ti;
         end
+        
+        clear eulero;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         
@@ -182,6 +185,9 @@ if ~object.is_delayed
             [T,X] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0);
             T=T+Tspan(1);
         end
+        
+        clear odeint;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         
@@ -316,6 +322,9 @@ else
             X = X';
             T = Ti;
         end
+        
+        clear eulero_delayed;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         
@@ -365,6 +374,9 @@ else
             [T,X] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0);
             T=T+Tspan(1);
         end
+        
+        clear odeint;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         

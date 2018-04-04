@@ -114,6 +114,9 @@ if ~object.is_delayed
         eval(['mex -silent eulero.o vectorField.o -L"',cpth,'" -lCEPAGE']);
         nStep = (Tspan(2)-Tspan(1))/dt;
         X = eulero(nx,nStep,dt,x0);
+        
+        clear eulero;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         X = X';
@@ -157,6 +160,9 @@ if ~object.is_delayed
         [T,X] = odeint(nx,Tspan(2)-Tspan(1),dt,x0);
         T = T+Tspan(1);
         cd(oldFolder);
+        
+        clear odeint;
+        
         rmdir('tmp','s');
         
     else
@@ -279,6 +285,9 @@ else
         nStep = (Tspan(2)-Tspan(1))/dt;
         X = eulero_delayed(nx,nStep,dt,x0,x0_del');
         cd(oldFolder);
+        
+        clear eulero_delayed;
+        
         rmdir('tmp','s');
         X = X';
         T = linspace(Tspan(1),Tspan(2),nStep);
@@ -319,6 +328,9 @@ else
         eval(['mex -silent odeint_delayed.o vectorField.o  -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE']);
         [T,X] = odeint_delayed(nx,Tspan(2)-Tspan(1),dt,x0,x0_del);
         T = T+Tspan(1);
+        
+        clear odeint_delayed;
+        
         cd(oldFolder);
         rmdir('tmp','s');
         

@@ -150,6 +150,9 @@ if ~object.is_delayed
             phi = mod(euleroEvents(Nstati,nStep,dt,CI,Vth,stopThreshold,N),1);
             
         end
+        
+        clear euleroEvents;
+        
         cd(oldFolder);
         rmdir(nameFolder,'s');
     elseif strcmp(integrator,'odeint')
@@ -203,6 +206,9 @@ if ~object.is_delayed
         else
             phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
         end
+        
+        clear odeintEvents;
+        
         cd(oldFolder);
         rmdir(nameFolder,'s');
         
@@ -379,6 +385,9 @@ else
             phi = mod(euleroEvents_delayed(Nstati,nStep,dt,CI,Vth,stopThreshold,N,x0_del),1);
             
         end
+        
+        clear euleroEvents_delayed;
+        
         cd(oldFolder);
         rmdir(nameFolder,'s');
     elseif strcmp(integrator,'odeint')
@@ -432,6 +441,9 @@ else
         else
             phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
         end
+        
+        clear odeintEvents;
+        
         cd(oldFolder);
         rmdir(nameFolder,'s');
         

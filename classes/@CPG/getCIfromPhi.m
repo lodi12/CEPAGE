@@ -84,10 +84,10 @@ CI = zeros(M,object.totState);
 eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
 
 % Calcolo il periodo T e trovo le CI1
-opt = odeset('Events' , eventFun , 'RelTol', 1.0e-5);
+opt.integratorOptions = odeset('RelTol', 1.0e-7);
 
 
-[T, X] = neur.sim([0 Ttrans],x0);
+[T, X] = neur.sim([0 Ttrans],x0,opt);
 
 up = find(diff(X(:,1) > Vth) == 1);  
 

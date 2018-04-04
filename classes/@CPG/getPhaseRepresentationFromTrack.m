@@ -1,4 +1,4 @@
-function phi = getPhaseRepresentationFromTrack(object,T,X,Vth )
+function [Tphi,phi] = getPhaseRepresentationFromTrack(object,T,X,Vth )
 % getPhaseRepresentationFromTrack   Gets the phase evolution of the network
 %
 % phi = getPhaseRepresentationFromTrack(object,T,X,Vth )
@@ -69,9 +69,10 @@ end
 T1 = Te{1}(end)-Te{1}(end-1);
 
 phi = zeros(N-1,len);
-
+Tphi = zeros(len,1);
 for i=2:N
     phi(i-1,1:len) = mod((Te{i}(1:len)-Te{1}(1:len))/T1,1);
+    Tphi(1:len) = Te{1}(1:len);
 end
 
 phi = phi';
