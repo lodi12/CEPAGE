@@ -4,7 +4,7 @@ function str = getCbuilder(object)
     neurons = object.neurons;
 
     inhActivation = object.inhActivation;
-excActivation = object.excActivation;
+    excActivation = object.excActivation;
     
     g_in = object.g_in;
     g_ex = object.g_ex;
@@ -12,58 +12,24 @@ excActivation = object.excActivation;
     
     str = [];
     
-    % g_in
-    str = [str,'double g_in[] ={'];
-    for i=1:N-1
-        for j=1:N-1
-        str = [str,sprintf('%e,',g_in(i,j))];
-        end
-        str = [str,sprintf('%e,\n',g_in(i,end))]; 
-    end   
-    for j=1:N-1
-        str = [str,sprintf('%e,',g_in(end,j))];
-    end  
-    str = [str,sprintf('%e};\n\n',g_in(end,end))];
+    Ninh = sum(g_in(:) ~= 0);
+    Nexc = sum(g_ex(:) ~= 0);
+    Nel = sum(g_el(:) ~= 0);
     
-    
-    % g_ex
-    str = [str,'double g_ex[] ={'];
-    for i=1:N-1
-        for j=1:N-1
-        str = [str,sprintf('%e,',g_ex(i,j))];
-        end
-        str = [str,sprintf('%e,\n',g_ex(i,end))]; 
-    end   
-    for j=1:N-1
-        str = [str,sprintf('%e,',g_ex(end,j))];
-    end  
-    str = [str,sprintf('%e};\n\n',g_ex(end,end))];
-    
-    
-    
-    % g_el
-    str = [str,'double g_el[] ={'];
-    for i=1:N-1
-        for j=1:N-1
-        str = [str,sprintf('%e,',g_el(i,j))];
-        end
-        str = [str,sprintf('%e,\n',g_el(i,end))]; 
-    end   
-    for j=1:N-1
-        str = [str,sprintf('%e,',g_el(end,j))];
-    end  
-    str = [str,sprintf('%e};\n\n',g_el(end,end))];
-    
-    
+
     
     
     str = [str,'neuron_model **neuron;\n\n'];
-    str = [str,'synapse_model **inhSynapses;\n'];
-    str = [str,'synapse_model **excSynapses;\n\n'];
+    str = [str,'CPG::synStruct_t **inhSyn;\n'];
+    str = [str,'CPG::synStruct_t **excSyn;\n\n'];
+    str = [str,'CPG::synStruct_t **elSyn;\n\n'];
     
-    str = [str,sprintf('neuron = (neuron_model **)malloc(%d*sizeof(neuron_model *));\n',N)];
-    str = [str,sprintf('inhSynapses = (synapse_model **)malloc(%d*%d*sizeof(synapse_model *));\n',N,N)];
-    str = [str,sprintf('excSynapses = (synapse_model **)malloc(%d*%d*sizeof(synapse_model *));\n\n',N,N)];
+    str = [str,sprintf('neuron = new neuron_model*[%d];\n',N)];
+    str = [str,sprintf('inhSyn = new CPG::synStruct*[%d];\n',Ninh)];
+    str = [str,sprintf('excSyn = new CPG::synStruct*[%d];\n',Nexc)];
+    str = [str,sprintf('elSyn = new CPG::synStruct*[%d];\n',Nel)];
+
+  
     
     for i=1:N
     str = [str,'neuron[',num2str(i-1),'] = new ',neurons{i}.getCbuilder(),';\n'];
@@ -71,25 +37,43 @@ excActivation = object.excActivation;
     
     str = [str,'\n'];
     
+    
+    ii = 0;
+    
     for i=1:N
         for j=1:N
-            indexSyn = (i-1)*N+(j-1)+1;
-            str = [str,'inhSynapses[',num2str(indexSyn-1),'] = new ',inhActivation{i,j}.getCbuilder(),';\n'];
+            if g_in(i,j) ~= 0
+                str = [str,'inhSyn[',num2str(ii),'] = new CPG::synStruct(',num2str(i-1),',',num2str(j-1),',',num2str(g_in(i,j)),',',num2str(object.EsynIn),', new ',inhActivation{i,j}.getCbuilder(),');\n'];
+                ii = ii + 1;
+            end
         end
     end
     
     str = [str,'\n'];
     
+    ii = 0;
+    
     for i=1:N
         for j=1:N
-            indexSyn = (i-1)*N+(j-1)+1;
-            str = [str,'excSynapses[',num2str(indexSyn-1),'] = new ',excActivation{i,j}.getCbuilder(),';\n'];
+            if g_ex(i,j) ~= 0
+                str = [str,'excSyn[',num2str(ii),'] = new CPG::synStruct(',num2str(i-1),',',num2str(j-1),',',num2str(g_ex(i,j)),',',num2str(object.EsynEx),', new ',excActivation{i,j}.getCbuilder(),');\n'];
+                ii = ii + 1;
+            end
         end
     end
     
     str = [str,'\n'];
     
+    ii = 0;
     
+    for i=1:N
+        for j=1:N
+            if g_el(i,j) ~= 0
+                str = [str,'elSyn[',num2str(ii),'] = new CPG::synStruct(',num2str(i-1),',',num2str(j-1),',',num2str(g_el(i,j)),',0, new FTM_synapse_model());\n'];
+                ii = ii + 1;
+            end
+        end
+    end
     
     str = [str,'\n\n'];
     
@@ -108,8 +92,8 @@ excActivation = object.excActivation;
     
     
     str = [str,str2,'};\n\n'];
-    str = [str,sprintf('*vf = new CPG(%d,neuron,g_in, g_ex, g_el,%e,%e,inhSynapses,excSynapses,delays)', ...
-        object.N,object.EsynIn,object.EsynEx)];
+    str = [str,sprintf('*vf = new CPG(%d,neuron,%d,%d,%d,inhSyn,excSyn,elSyn,%d,delays)', ...
+        object.N,Ninh,Nexc,Nel,numel(object.delays))];
     
     
     

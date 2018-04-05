@@ -121,9 +121,10 @@ CI(:,1:neur.getnx) = repmat(CI1,M,1);
 x0 = CI1;
 
 
-[T, X] = neur.sim([0 1.5*Tau],x0,opt);
+[T, X] = neur.sim([0 Tau*1.5],x0,opt);
 
 TT = Tau*(1-deltaPhi);
+TT(TT > Tau) = Tau;
 for i=1:N-1
     XX = interp1(T,X,TT(:,i));
     CI(:,(i*nx+1):(i*nx+nx)) = XX;

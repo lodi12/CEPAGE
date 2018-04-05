@@ -17,6 +17,7 @@
 
 #include <vector>
 
+
 #include "dynSys.hpp"
 #include "neuron_model.hpp"
 #include "synapse_model.hpp"
@@ -27,18 +28,26 @@
 using namespace std;
 
 class CPG : public dynSys {
+    
+public: struct synStruct
+{
+    int i;
+    int j;
+    double g;
+    double Esyn;
+    synapse_model *activation;
+    
+    synStruct(){};
+    synStruct(int i, int j, double g, double Esyn, synapse_model *activation){this->i = i;this->j = j;this->g = g;this->Esyn = Esyn; this->activation = activation;};
+};
+
+typedef synStruct synStruct_t; 
+    
+    
 private:
     int N;
     neuron_model **neuroni;
-    double *g_in;
-    double *g_ex;
-    double *g_el;
-    double EsynIn;
-    double EsynEx; 
-
-    synapse_model **inhActivation;
-    synapse_model **excActivation;
-    
+         
     vector<int> **neuronDelaysIndex;
     vector<int> **inhSynDelaysIndex;
     vector<int> **excSynDelaysIndex;
@@ -47,12 +56,21 @@ private:
     int *NinhSynDelaysIndex;
     int *NexcSynDelaysIndex;
     
+    int Ninh;
+    int Nexc;
+    int Nel;
+    
+    synStruct_t **inhSyn;
+    synStruct_t **excSyn;
+    synStruct_t **elSyn;
+    
+    
     int *firstState;
     
     
 public:
     CPG();
-    CPG(int N,neuron_model **neuroni, double *g_in, double *g_ex, double *g_el,double EsynIn, double EsynEx, synapse_model **inhActivation, synapse_model **excActivation , double networkDelays[]); 
+	CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t **inhSyn, synStruct_t **excSyn , synStruct_t **elSyn, int Ndelay, double networkDelays[]);
     
     /* Xprec is a Ndelays x Nstates matrix */
     void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);

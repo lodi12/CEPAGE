@@ -140,7 +140,7 @@ for i=1:numel(infoFile)
     tmpFile = infoFile(i).name;
     if numel(tmpFile) > 4
         if strcmp(tmpFile(end-3:end),'.cpp')
-            evalc(['mex -silent  -c src/',tmpFile,' -outdir bin']);
+            eval(['mex -silent  -c src/',tmpFile,' -outdir bin']);
 			
 			if ispc
 				totalString = [totalString,' bin/',tmpFile(1:end-3),'obj'];

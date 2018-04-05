@@ -18,6 +18,7 @@ FTM_synapse_model::FTM_synapse_model()
     this->nx = 0;
     this->nu = 0;
     this->theta = 0;
+    this->Ndelay = 0;
 }
 
 FTM_synapse_model::FTM_synapse_model(double nu, double theta)
@@ -25,6 +26,7 @@ FTM_synapse_model::FTM_synapse_model(double nu, double theta)
     this->nx = 0;
     this->nu = nu;
     this->theta = theta;
+    this->Ndelay = 0;
 }
 
 

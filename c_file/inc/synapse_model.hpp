@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   neuron_model.h
  * Author: picio
  *
@@ -16,9 +16,9 @@
 
 
 class synapse_model
-{        
+{
     
-protected:    
+protected:
     int nx;
     
     int Ndelay = 0;
