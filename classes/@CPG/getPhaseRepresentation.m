@@ -134,11 +134,18 @@ if ~object.is_delayed
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'euleroEvents.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-        str = ['mex euleroEvents.o vectorField.o -L',cpth,' -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'euleroEvents.obj']);
+            eval(['mex -silent euleroEvents.obj vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output euleroEvents']);
+        elseif isunix
+            copyfile([cpth,'euleroEvents.o']);
+            eval(['mex -silent euleroEvents.o vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output euleroEvents']);
+        else
+            error('Unsopported operative system');
+        end
+        
+        
         nStep = (Tspan(2)-Tspan(1))/dt;
         
         if size(CI,1) > 1
@@ -154,7 +161,17 @@ if ~object.is_delayed
         clear euleroEvents;
         
         cd(oldFolder);
-        rmdir(nameFolder,'s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
+        
+        
     elseif strcmp(integrator,'odeint')
         
         useBoost = getCEPAGEPar();
@@ -192,11 +209,16 @@ if ~object.is_delayed
         boostDir = boostDir.boostDir;
         
         cpth = getcpath();
-        copyfile([cpth,'odeintEvents.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-        str = ['mex odeintEvents.o vectorField.o -I',boostDir,'/include -L',boostDir,'/lib -L',cpth,' -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'odeintEvents.obj']);
+            eval(['mex -silent odeintEvents.obj vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeintEvents']);
+        elseif isunix
+            copyfile([cpth,'odeintEvents.o']);
+            eval(['mex -silent odeintEvents.o vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeintEvents']);
+        else
+            error('Unsopported operative system');
+        end
         
         if size(CI,1) > 1
             phi = cell(size(CI,1),1);
@@ -210,7 +232,15 @@ if ~object.is_delayed
         clear odeintEvents;
         
         cd(oldFolder);
-        rmdir(nameFolder,'s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     else
         
@@ -369,11 +399,17 @@ else
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'euleroEvents_delayed.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-        str = ['mex euleroEvents_delayed.o vectorField.o -L',cpth,' -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'euleroEvents_delayed.obj']);
+            eval(['mex -silent euleroEvents_delayed.obj vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output euleroEvents_delayed']);
+        elseif isunix
+            copyfile([cpth,'euleroEvents_delayed.o']);
+            eval(['mex -silent euleroEvents_delayed.o vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output euleroEvents_delayed']);
+        else
+            error('Unsopported operative system');
+        end
+        
         nStep = (Tspan(2)-Tspan(1))/dt;
         
         if size(CI,1) > 1
@@ -389,7 +425,16 @@ else
         clear euleroEvents_delayed;
         
         cd(oldFolder);
-        rmdir(nameFolder,'s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
+        
     elseif strcmp(integrator,'odeint')
         
         useBoost = getCEPAGEPar();
@@ -427,25 +472,38 @@ else
         boostDir = boostDir.boostDir;
         
         cpth = getcpath();
-        copyfile([cpth,'odeintEvents.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I',cpth,' -L',cpth,' -lCEPAGE']);
-        str = ['mex odeintEvents.o vectorField.o -I',boostDir,'/include -L',boostDir,'/lib -L',cpth,' -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'odeintEvents_delayed.obj']);
+            eval(['mex -silent odeintEvents_delayed.obj vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeintEvents_delayed']);
+        elseif isunix
+            copyfile([cpth,'odeintEvents_delayed.o']);
+            eval(['mex -silent odeintEvents_delayed.o vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeintEvents_delayed']);
+        else
+            error('Unsopported operative system');
+        end
         
         if size(CI,1) > 1
             phi = cell(size(CI,1),1);
             parfor kk = 1:size(CI,1)
-                phi{kk} = mod(odeintEvents(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
+                phi{kk} = mod(odeintEvents_delayed(Nstati,Tspan(2),dt,CI(kk,:),Vth,N),1);
             end
         else
-            phi = mod(odeintEvents(Nstati,Tspan(2),dt,CI,Vth,N),1);
+            phi = mod(odeintEvents_delayed(Nstati,Tspan(2),dt,CI,Vth,N),1);
         end
         
         clear odeintEvents;
         
         cd(oldFolder);
-        rmdir(nameFolder,'s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     else
         

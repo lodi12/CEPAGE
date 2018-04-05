@@ -1,14 +1,30 @@
 classdef synapse_model
     
-    % v   Generic synapse model
+    % synapse_model Generic synapse model
     %
     % This object represents a generic synapse model.
-    % The synapse is characterized by an activation function f(x)
+    % The synapse is characterized by an activation function f(x) and
+    % possibly by a state vector x 
+    %
+    % This is an abstract class which cannot be istantiated.
     %
     %
     % synapse_model methods:
+    %   getStateNames - gets the mnemonical name of the synapse states
+    %   getnx - Gets the number of state varible nx
+    %
     %   getActivation - Compute the activation function
     %   getXdot       - Compute the synapse states derivative
+    %
+    %   isContinuous - Report if the model is time continuous
+    %   is_delayed - Report if the model is time delayed
+    %   getDelays - Gets the delays
+    %
+    %   resetStates - reset the state variables
+    %   getResetConditions - get the reset condition
+    %
+    %   getCbuilder - Generates a string of C code for the computation 
+    %                 of model vector field
     %
     % See also FTM_synapse_model
     %

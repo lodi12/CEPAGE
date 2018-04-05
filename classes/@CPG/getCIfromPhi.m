@@ -14,7 +14,17 @@ function CI = getCIfromPhi(object,deltaPhi,varargin)
 %         value of the membrane potential (default 0)
 % - Ttrans - Transitory time of the neuron (default 100)
 % - x0 - Initial condition of the neuoron (default 0)
-%
+% - integrator: string indicating the solver used to integrate the
+%                differential equations. It can be either 'ode45','ode23',
+%                'ode113','ode15s','ode23s','ode23t' , 'ode23tb', 'odeint' or 'eulero.
+%                 If you choose eulero or odeint the simulation is made in C throught mex
+%                 file and a supported mex compiler is required.
+%                Default: 'ode45'.
+% - integratorOptions: options to provide to the ODE solver. Type doc odeset to
+%                 get help. If you choose eulero the variable must have a
+%                 field dt that describe the integration step size.
+%                 Default: odeset.
+%                 
 % Contributors:
 %
 % Matteo Lodi (matteo.lodi@edu.unige.it)
@@ -45,6 +55,9 @@ nx = object.neurons{1}.getnx;
 Ttrans = 100;
 Vth = 0;
 
+integrator = 'ode45';
+integratorOptions = odeset;
+
 if nargin == 3
     if isstruct(varargin{1})
         if isfield(varargin{1},'Vth')
@@ -57,6 +70,12 @@ if nargin == 3
             if numel(x0) == neur.nx
             x0 = varargin{1}.x0;
             end
+        end
+        if isfield(varargin{1},'integrator')
+            integrator = varargin{1}.integrator;
+        end
+        if isfield(varargin{1},'integratorOptions')
+            integratorOptions = varargin{1}.integratorOptions;
         end
     end
 end
@@ -81,10 +100,9 @@ end
 CI = zeros(M,object.totState);
 
 
-eventFun = @(T, Y) object.eventsTh(T, Y, Vth);
-
 % Calcolo il periodo T e trovo le CI1
-opt.integratorOptions = odeset('RelTol', 1.0e-7);
+opt.integratorOptions = integratorOptions;
+opt.integrator = integrator;
 
 
 [T, X] = neur.sim([0 Ttrans],x0,opt);
@@ -99,11 +117,11 @@ Tau = Te(end)-Te(end-1);
 CI1 = X(up(end) , 1:neur.getnx);
 CI(:,1:neur.getnx) = repmat(CI1,M,1);
 % Quindi calcolo le altre
-opt = odeset('RelTol', 1.0e-5, ...
-    'Refine', 10);
 
 x0 = CI1;
-[T, X] = neur.sim([0 Tau],x0);
+
+
+[T, X] = neur.sim([0 1.5*Tau],x0,opt);
 
 TT = Tau*(1-deltaPhi);
 for i=1:N-1
@@ -111,13 +129,5 @@ for i=1:N-1
     CI(:,(i*nx+1):(i*nx+nx)) = XX;
 end
 
-% for i=1:M
-%     for j=1:N-1
-%         TT = Tau*(1-deltaPhi(i,j));
-%         ii = find(T >= TT);
-%         index = j*neur.getnx+1;
-%         CI(i,index:index+neur.getnx-1) = X(ii(1),1:neur.getnx);
-%     end
-% end
 
 end

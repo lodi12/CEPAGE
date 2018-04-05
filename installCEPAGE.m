@@ -42,15 +42,11 @@ if ~useBoost
 else
     boostDir = input('Insert boost installation directory\n','s');
     
-    if boostDir(end) == '/' && numel(boostDir) ~= 1
+    if (boostDir(end) == '\' || boostDir(end) == '/') && numel(boostDir) ~= 1
         boostDir = boostDir(1:end-1);
     end
     
-    fin = fopen('function/getCEPAGEPar.m','w');
-    fprintf(fin,'function CEPAGEPar = getCEPAGEPar()\n');
-    fprintf(fin,['CEPAGEPar.useBoost = true;\n']);
-    fprintf(fin,['CEPAGEPar.boostDir = ''',boostDir,''';']);
-    fclose(fin);
+    
     
     disp(' ')
     disp('Checking odeint installation...')
@@ -99,10 +95,28 @@ else
     delete('try.*')
     
     if ~isOk
+        fin = fopen('function/getCEPAGEPar.m','w');
+        fprintf(fin,'function CEPAGEPar = getCEPAGEPar()\n');
+        fprintf(fin,['CEPAGEPar.useBoost = false;\n']);
+        fprintf(fin,['CEPAGEPar.boostDir = '''';']);
+        fclose(fin);
         error('Unable to find odeint library');
     else
+        
+        fin = fopen('function/getCEPAGEPar.m','w');
+        fprintf(fin,'function CEPAGEPar = getCEPAGEPar()\n');
+        fprintf(fin,['CEPAGEPar.useBoost = true;\n']);
+        boostDirToPrint = strrep(boostDir,'\','\\');
+        
+        fprintf(fin,['CEPAGEPar.boostDir = ''',boostDirToPrint,''';']);
+        fclose(fin);
+        
         disp('Odeint library found');
     end
+    
+    
+    
+    
     
 end
 
@@ -126,8 +140,15 @@ for i=1:numel(infoFile)
     tmpFile = infoFile(i).name;
     if numel(tmpFile) > 4
         if strcmp(tmpFile(end-3:end),'.cpp')
-            eval(['mex -silent  -c src/',tmpFile,' -outdir bin']);
-            totalString = [totalString,' bin/',tmpFile(1:end-3),'o'];
+            evalc(['mex -silent  -c src/',tmpFile,' -outdir bin']);
+			
+			if ispc
+				totalString = [totalString,' bin/',tmpFile(1:end-3),'obj'];
+			elseif isunix
+				totalString = [totalString,' bin/',tmpFile(1:end-3),'o'];
+			else
+				error('Unsopported operative system');
+			end
         end
     end
     
@@ -141,10 +162,10 @@ else
     error('Unsopported operative system');
 end
 
-mex -silent  -c eulero.cpp -L. -lCEPAGE
-mex -silent  -c eulero_delayed.cpp -L. -lCEPAGE
-mex -silent -c euleroEvents.cpp -L. -lCEPAGE
-mex -silent -c euleroEvents_delayed.cpp -L. -lCEPAGE
+mex -silent  -c eulero.cpp -L. -lCEPAGE;
+mex -silent  -c eulero_delayed.cpp -L. -lCEPAGE;
+mex -silent -c euleroEvents.cpp -L. -lCEPAGE;
+mex -silent -c euleroEvents_delayed.cpp -L. -lCEPAGE;
 disp('eulero integrators compiled')
 
 
@@ -154,9 +175,10 @@ if useBoost
     eval(['mex -c odeint_delayed.cpp -silent -L. -lCEPAGE -I"',boostDir,'/include" -L"',boostDir,'/lib"']);
     eval(['mex -c odeintEvents.cpp -silent -L. -lCEPAGE -I"',boostDir,'/include" -L"',boostDir,'/lib"']);
     disp('boost integrators compiled')
-    warning on
 end
 
+warning on
+	
 cd ..
 
 disp(' ')

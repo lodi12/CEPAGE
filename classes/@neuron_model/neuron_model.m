@@ -6,7 +6,9 @@ classdef neuron_model
     % The neuron is characterized by a set of states (x)
     %
     % The continuous time formulation is:
-    %       dx/dt = f(x,Iext)
+    %       dx/dt = f(x(t),c(t-\tau),Iext)
+    % eventually subject to the reset rule
+    %        x = x_r, if x \leq \bar{x} 
     % where Iext is an external current that act on the neuron.
     % The first state variable is the membrane potential.
     % This is an abstract class which cannot be istantiated.
@@ -15,14 +17,29 @@ classdef neuron_model
     %   computePRC - Compute the Phase resetting curve for the neuron
     %   getStateNames - gets the mnemonical name of the neuron states
     %   getnx - Gets the number of state varible nx
+    %   isContinuous - Report if the model is time continuous
+    %   is_delayed - Report if the model is time delayed
+    %   getDelays - Gets the delays
     %
-    % See also HH_model, neuron_network
+    %   getXdot - computes the derivative of the state
+    %
+    %   resetStates - reset the state variables
+    %   getResetConditions - get the reset condition for neuron model
+    %
+    %   sim - simulates the neuron.
+    %   simplot - simulates the neuron system and plots time evolution of
+    %     
+    %   getCbuilder - Generates a string of C code for the computation 
+    %                 of model vector field
+    %     
+    %     
+    % See also HH_model, CPG
     %
     % Contributors:
     % Matteo Lodi (matteo.lodi@edu.unige.it)
     %
     % Copyright (C) 2016 University of Genoa, Italy.
-    
+    %     
     % Legal note:
     % This program is free software; you can redistribute it and/or
     % modify it under the terms of the GNU General Public

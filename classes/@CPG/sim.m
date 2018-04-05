@@ -100,12 +100,19 @@ if ~object.is_delayed
         end
         oldFolder = cd;
         
-        ii = 0;
-        
-        
-        mkdir('tmp');
         dt = integratorOptions.dt;
-        cd('tmp');
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
+        
         
         fout = fopen('vectorField.cpp','w');
         fprintf(fout,'#include "vectorField.hpp"\n');
@@ -114,10 +121,16 @@ if ~object.is_delayed
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'eulero.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        eval(['mex -silent eulero.o vectorField.o -L"',cpth,'" -lCEPAGE']);
+        if ispc
+            copyfile([cpth,'eulero.obj']);
+            eval(['mex -silent eulero.obj vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output eulero']);
+        elseif isunix
+            copyfile([cpth,'eulero.o']);
+            eval(['mex -silent eulero.o vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output eulero']);
+        else
+            error('Unsopported operative system');
+        end
         
         nStep = (Tspan(2)-Tspan(1))/dt;
         Ti = linspace(Tspan(1),Tspan(2),nStep);
@@ -137,8 +150,15 @@ if ~object.is_delayed
         clear eulero;
         
         cd(oldFolder);
-        rmdir('tmp','s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
         
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     elseif strcmp(integrator,'odeint')
         
@@ -155,8 +175,18 @@ if ~object.is_delayed
             dt = integratorOptions.dt;
         end
         oldFolder = cd;
-        mkdir('tmp');
-        cd('tmp');
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
+        
         
         
         fout = fopen('vectorField.cpp','w');
@@ -166,13 +196,19 @@ if ~object.is_delayed
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'odeint.o']);
+        
         boostDir = getCEPAGEPar();
         boostDir = boostDir.boostDir;
         
-        eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        str = ['mex -silent odeint.o vectorField.o -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'odeint.obj']);
+            eval(['mex -silent odeint.obj vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeint']);
+        elseif isunix
+            copyfile([cpth,'odeint.o']);
+            eval(['mex -silent odeint.o vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeint']);
+        else
+            error('Unsopported operative system');
+        end
         
         if size(x0,1) > 1
             X = cell(size(x0,1),1);
@@ -187,9 +223,17 @@ if ~object.is_delayed
         end
         
         clear odeint;
-        
         cd(oldFolder);
-        rmdir('tmp','s');
+        
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     else
         %     integratorOptions.Jacobian = @object.getJacobian;
@@ -289,12 +333,19 @@ else
         end
         oldFolder = cd;
         
-        ii = 0;
-        
-        
-        mkdir('tmp');
         dt = integratorOptions.dt;
-        cd('tmp');
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
+        
         
         fout = fopen('vectorField.cpp','w');
         fprintf(fout,'#include "vectorField.hpp"\n');
@@ -303,10 +354,16 @@ else
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'eulero_delayed.o']);
         
-        eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        eval(['mex -silent eulero_delayed.o vectorField.o -L"',cpth,'" -lCEPAGE']);
+        if ispc
+            copyfile([cpth,'eulero_delayed.obj']);
+            eval(['mex -silent eulero_delayed.obj vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output eulero_delayed']);
+        elseif isunix
+            copyfile([cpth,'eulero_delayed.o']);
+            eval(['mex -silent eulero_delayed.o vectorField.cpp "-I',cpth,'" "-L',cpth,'" -lCEPAGE -output eulero_delayed']);
+        else
+            error('Unsopported operative system');
+        end
         
         nStep = (Tspan(2)-Tspan(1))/dt;
         Ti = linspace(Tspan(1),Tspan(2),nStep);
@@ -326,8 +383,15 @@ else
         clear eulero_delayed;
         
         cd(oldFolder);
-        rmdir('tmp','s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
         
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     elseif strcmp(integrator,'odeint')
         
@@ -344,8 +408,17 @@ else
             dt = integratorOptions.dt;
         end
         oldFolder = cd;
-        mkdir('tmp');
-        cd('tmp');
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        cd(nameFolder);
         
         
         fout = fopen('vectorField.cpp','w');
@@ -355,30 +428,45 @@ else
         fclose(fout);
         
         cpth = getcpath();
-        copyfile([cpth,'odeint.o']);
+        
         boostDir = getCEPAGEPar();
         boostDir = boostDir.boostDir;
         
-        eval(['mex -silent -c vectorField.cpp -I"',cpth,'" -L"',cpth,'" -lCEPAGE']);
-        str = ['mex -silent odeint.o vectorField.o -I"',boostDir,'/include" -L"',boostDir,'/lib" -L"',cpth,'" -lCEPAGE'];
-        eval(str);
+        if ispc
+            copyfile([cpth,'odeint_delayed.obj']);
+            eval(['mex -silent odeint_delayed.obj vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeint_delayed']);
+            
+        elseif isunix
+            copyfile([cpth,'odeint_delayed.o']);
+            eval(['mex -silent odeint_delayed.o vectorField.cpp "-I',cpth,'" "-I',boostDir,'/include" "-L',boostDir,'/lib" -L"',cpth,'" -lCEPAGE -output odeint_delayed']);
+        else
+            error('Unsopported operative system');
+        end
         
         if size(x0,1) > 1
             X = cell(size(x0,1),1);
             T = cell(size(x0,1),1);
             parfor kk = 1:size(x0,1)
-                [T{kk},X{kk}] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0(kk,:));
+                [T{kk},X{kk}] = odeint_delayed(object.totState,Tspan(2)-Tspan(1),dt,x0(kk,:));
                 T{kk} = T{kk}+Tspan(1);
             end
         else
-            [T,X] = odeint(object.totState,Tspan(2)-Tspan(1),dt,x0);
+            [T,X] = odeint_delayed(object.totState,Tspan(2)-Tspan(1),dt,x0);
             T=T+Tspan(1);
         end
         
         clear odeint;
         
         cd(oldFolder);
-        rmdir('tmp','s');
+        a = 0;
+        tic
+        while (a == 0) && (toc < 5)
+            a = rmdir(nameFolder,'s');
+        end
+        
+        if a ~= 1
+            warning(['Cannot delete ',nameFolder,' folder, remove manually!']);
+        end
         
     else
         %     integratorOptions.Jacobian = @object.getJacobian;

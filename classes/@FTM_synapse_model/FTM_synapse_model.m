@@ -6,7 +6,7 @@ classdef FTM_synapse_model < synapse_model
     % modulation model.
     % The synapse is characterized by an activation function 
     %
-    %   f(x) = 1/(1+exp(-nu*(V-theta))
+    %   f(x) = 1/(1+exp(-nu*(Vpre-theta))
     %
     %
     % OBJ = FTM_synapse_model()
@@ -17,6 +17,9 @@ classdef FTM_synapse_model < synapse_model
     %
     % FTM_synapse_model methods:
     %   getActivation - Compute the activation function
+    %   getXdot       - Compute the synapse states derivative
+	%	getCbuilder - Generates a string of C code for the computation 
+    %                 of model vector field
     %
     % See also synapse_model
     %

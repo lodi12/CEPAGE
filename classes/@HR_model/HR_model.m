@@ -7,7 +7,7 @@ classdef HR_model < neuron_model
     %  |
     %  | dx/dt = y − x^3 + bx^2 − z + I - I_{ext}
     %  | 
-    % <  dẏ/dt = 1 − 5x^2 − y
+    % <  d�?/dt = 1 − 5x^2 − y
     %  |
     %  | dz/dt = \mu (s (x-x_{rest}) - z)
     %  |_
@@ -41,7 +41,8 @@ classdef HR_model < neuron_model
     %   set_x_rest - sets the value of parameter x_{rest}
     %   set_mu - sets the value of parameter \mu
     %   getJacobian -Computes the Jacobian of the vector field in point x 
-    %   generateC - Generates C files for the computation of model vector field
+    %   getCbuilder - Generates a string of C code for the computation 
+    %                 of model vector field
     %
     % The HR_model object is derived from neuron_model and inherits all its methods.
     %

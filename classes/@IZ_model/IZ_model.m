@@ -99,8 +99,8 @@ classdef IZ_model < neuron_model
         disp(object);
         str = getCbuilder(object);
         
-        [position,isterminal,direction] = getResetConditions(object,t,y);
-        [xreset,object] = resetStates(object,t,x);
+        [position,isterminal,direction] = getResetConditions(object,t,y,varargin);
+        [xreset,object] = resetStates(object,t,x,varargin);
         
         % get methods
         gL = get_gL(object);
