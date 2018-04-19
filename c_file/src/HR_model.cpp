@@ -23,6 +23,16 @@ HR_model::HR_model()
     this->x_rest = 0;
 }
 
+HR_model::HR_model(const HR_model &h) 
+{
+    this->nx = h.nx;
+    this->b = h.b;
+    this->I = h.I;
+    this->mu =  h.mu;
+    this->s = h.s;
+    this->x_rest = h.x_rest;
+}
+
 HR_model::HR_model(double b, double I, double mu, double s, double x_rest) 
 {
     this->nx = 3;
@@ -31,6 +41,11 @@ HR_model::HR_model(double b, double I, double mu, double s, double x_rest)
     this->mu =  mu;
     this->s = s;
     this->x_rest = x_rest;
+}
+
+HR_model *HR_model::clone() const
+{
+    return new HR_model(*this);
 }
 
 

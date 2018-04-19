@@ -24,7 +24,10 @@ private:
     
 public:
     FTM_synapse_model();
+    FTM_synapse_model(const FTM_synapse_model &other);
     FTM_synapse_model(double nu,double theta);
+    
+    virtual FTM_synapse_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Vpre);
     double getActivation(double *x, double Vpre);

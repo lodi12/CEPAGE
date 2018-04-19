@@ -18,16 +18,23 @@ function str = getCbuilder(object)
     
 
     
+    str = [str,'int i;\n'];
+    str = [str,'const int N = ',num2str(object.N),';\n'];
+    str = [str,'const int Ninh = ',num2str(Ninh),';\n'];
+    str = [str,'const int Nexc = ',num2str(Nexc),';\n'];
+    str = [str,'const int Nel = ',num2str(Nel),';\n'];
+    str = [str,'const int Ndelays = ',num2str(numel(object.delays)),';\n'];
+
     
     str = [str,'neuron_model **neuron;\n\n'];
     str = [str,'CPG::synStruct_t **inhSyn;\n'];
     str = [str,'CPG::synStruct_t **excSyn;\n\n'];
     str = [str,'CPG::synStruct_t **elSyn;\n\n'];
     
-    str = [str,sprintf('neuron = new neuron_model*[%d];\n',N)];
-    str = [str,sprintf('inhSyn = new CPG::synStruct*[%d];\n',Ninh)];
-    str = [str,sprintf('excSyn = new CPG::synStruct*[%d];\n',Nexc)];
-    str = [str,sprintf('elSyn = new CPG::synStruct*[%d];\n',Nel)];
+    str = [str,'neuron = new neuron_model*[N];\n'];
+    str = [str,'inhSyn = new CPG::synStruct*[Ninh];\n'];
+    str = [str,'excSyn = new CPG::synStruct*[Nexc];\n'];
+    str = [str,'elSyn = new CPG::synStruct*[Nel];\n'];
 
   
     
@@ -92,9 +99,26 @@ function str = getCbuilder(object)
     
     
     str = [str,str2,'};\n\n'];
-    str = [str,sprintf('*vf = new CPG(%d,neuron,%d,%d,%d,inhSyn,excSyn,elSyn,%d,delays)', ...
-        object.N,Ninh,Nexc,Nel,numel(object.delays))];
+    str = [str,'*vf = new CPG(N,neuron,Ninh,Nexc,Nel,inhSyn,excSyn,elSyn,Ndelays,delays);\n\n'];
     
+    
+    % now delete everything
+    
+    str = [str,'for(i=0;i<N;i++)\n'];
+    str = [str,'    delete(neuron[i]);\n'];
+    str = [str,'delete[](neuron);\n'];
+    
+    str = [str,'for(i=0;i<Ninh;i++)\n'];
+    str = [str,'    delete(inhSyn[i]);\n'];
+    str = [str,'delete[](inhSyn);\n'];
+    
+    str = [str,'for(i=0;i<Nexc;i++)\n'];
+    str = [str,'    delete(excSyn[i]);\n'];
+    str = [str,'delete[](excSyn);\n'];
+    
+    str = [str,'for(i=0;i<Nel;i++)\n'];
+    str = [str,'    delete(elSyn[i]);\n'];
+    str = [str,'delete[](elSyn);\n'];
     
     
     

@@ -16,21 +16,21 @@
 CPG::CPG()
 {
     this->N = 0;
-    this->neuroni = (neuron_model **)malloc(0);
+    this->neuroni = new neuron_model*[0];;
     
     
-    this->firstState = (int *)malloc(0);
+    this->firstState = new int[0];
     
     
-    NneuronDelaysIndex = (int *)malloc(0);
-    NinhSynDelaysIndex = (int *)malloc(0);
-    NexcSynDelaysIndex = (int *)malloc(0);
+    NneuronDelaysIndex = new int[0];
+    NinhSynDelaysIndex = new int[0];
+    NexcSynDelaysIndex = new int[0];
     
     this->Ninh = 0;
     this->Nexc = 0;
     this->Nel = 0;
     
-    firstState = (int *)malloc(0);
+    firstState = new int[0];
     
 }
 
@@ -51,7 +51,7 @@ CPG::CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t 
     this->neuroni = new neuron_model*[N];
     
     for(i=0;i<N;i++)
-        this->neuroni[i] = neuroni[i];
+        this->neuroni[i] = neuroni[i]->clone();
     
     this->Ninh = Ninh;
     this->Nexc = Nexc;
@@ -63,24 +63,24 @@ CPG::CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t 
     this->elSyn = new synStruct*[Nel];
     
     for(i=0;i<Ninh;i++)
-        this->inhSyn[i] = inhSyn[i];
+        this->inhSyn[i] = inhSyn[i]->clone();
     for(i=0;i<Nexc;i++)
-        this->excSyn[i] = excSyn[i];
+        this->excSyn[i] = excSyn[i]->clone();
     for(i=0;i<Nel;i++)
-        this->elSyn[i] = elSyn[i];
+        this->elSyn[i] = elSyn[i]->clone();
     
     
     this->Ndelay = Ndelay;//((int)sizeof(networkDelays))/sizeof(double);
     
     this->delays = networkDelays;
     
-    this->firstState = (int *)malloc(N*sizeof(int)+Ninh+Nexc*sizeof(int));
+    this->firstState = new int[N+Ninh+Nexc];
     
     
-    tmpVect = (double *)malloc(Ndelay*sizeof(double));
+    tmpVect = new double[Ndelay];
     
     this->neuronDelaysIndex = new vector<int>*[N];
-    this->NneuronDelaysIndex = (int *)malloc(N*sizeof(int));
+    this->NneuronDelaysIndex = new int[N];
     
     index = 0;
     for(i=0;i<N;i++)
@@ -117,7 +117,7 @@ CPG::CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t 
  
     
     this->inhSynDelaysIndex = new vector<int>*[Ninh];
-    this->NinhSynDelaysIndex = (int *)malloc(Ninh*sizeof(int));
+    this->NinhSynDelaysIndex = new int[Ninh];
     
     for(i=0;i<Ninh;i++)
     {
@@ -154,7 +154,7 @@ CPG::CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t 
 
     
     this->excSynDelaysIndex = new vector<int>*[Nexc];
-    this->NexcSynDelaysIndex = (int *)malloc(Nexc*sizeof(int));
+    this->NexcSynDelaysIndex = new int[Nexc];
     
     for(i=0;i<Nexc;i++)
     {
@@ -190,7 +190,7 @@ CPG::CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t 
     }
     
     
-    free(tmpVect);
+    delete(tmpVect);
     
 }
 
@@ -226,9 +226,9 @@ void CPG::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
     int iInh,iExc,iEl;
     
     
-    Xprec_ = (double**)malloc(maxNdelay*sizeof(double *));
+    Xprec_ = new double *[maxNdelay];//(double**)malloc(maxNdelay*sizeof(double *));
     
-    Vjprec = (double *)malloc(maxNdelay*sizeof(double));
+    Vjprec = new double[maxNdelay];//(double *)malloc(maxNdelay*sizeof(double));
     
     iInh = 0;
     iExc = 0;
@@ -323,8 +323,8 @@ void CPG::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
         
         
     }
-    free(Xprec_);
-    free(Vjprec);
+    delete[](Xprec_);
+    delete(Vjprec);
     
     
 }
@@ -582,7 +582,7 @@ CPG::~CPG()
 {
     int i;
     
-    free(this->firstState);
+    delete(this->firstState);
         
     for(i=0;i<N;i++)
         delete(this->neuroni[i]);
@@ -599,5 +599,6 @@ CPG::~CPG()
     for(i=0;i<Nel;i++)
         delete(this->elSyn[i]);
     delete[](elSyn);
+    
 }
 

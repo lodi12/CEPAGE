@@ -13,6 +13,7 @@
 
 #include "../inc/FN_relaxation_model.hpp"
 
+
 FN_relaxation_model::FN_relaxation_model() 
 {
     this->nx = 2;
@@ -27,6 +28,17 @@ FN_relaxation_model::FN_relaxation_model(double I,double eps)
     this->eps = eps;
 }
 
+FN_relaxation_model::FN_relaxation_model(const FN_relaxation_model &f)
+{
+    this->nx = f.nx;
+    this->I = f.I;
+    this->eps = f.eps;
+}
+
+FN_relaxation_model *FN_relaxation_model::clone() const
+{
+    return new FN_relaxation_model(*this);
+}
 
 void FN_relaxation_model::getXdot(double t, double *x, double *xdot,double Iext)
 {

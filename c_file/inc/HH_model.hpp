@@ -34,7 +34,10 @@ private:
     
 public:
     HH_model();
+    HH_model(const HH_model &h);
     HH_model(double gna,double ENa,double gk2,double Ek,double gl,double El,double tNa,double tk2,double C,double Iapp,double VshiftK2);
+    
+    virtual HH_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Iext);
     

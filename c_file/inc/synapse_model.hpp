@@ -25,6 +25,9 @@ protected:
     double *delays = {};
     
 public:
+    
+    virtual synapse_model *clone() const = 0;
+    
     virtual double getActivation(double *x,double Vpre, double *VpreOld);
     virtual double getActivation(double *x,double Vpre) = 0;
     
@@ -43,6 +46,9 @@ public:
     
     int getNdelay();
     void getDelays(double *del);
+    
+    virtual ~synapse_model()
+    {}
     
 };
 

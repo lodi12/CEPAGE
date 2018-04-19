@@ -240,4 +240,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(xDel);
     mxFree(delays);
     
+    
+    delete(vectorField);
+    
 }

@@ -27,7 +27,10 @@ private:
     
 public:
     HR_model();
+    HR_model(const HR_model &h);
     HR_model(double b, double I, double mu, double s, double x_rest);
+    
+    virtual HR_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Iext);
     

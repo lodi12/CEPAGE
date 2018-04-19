@@ -130,5 +130,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(dx);
     mxFree(delays);
     mxFree(delayIndex);
+    
+    delete(vectorField);
 
 }

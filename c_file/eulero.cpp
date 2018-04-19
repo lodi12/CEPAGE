@@ -70,4 +70,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     mxFree(dx);
     
+    delete(vectorField);
 }

@@ -29,6 +29,22 @@ HH_model::HH_model()
     this->VshiftK2 = 0; 
 }
 
+HH_model::HH_model(const HH_model &h)
+{
+    this->nx = h.nx;
+    this->gna = h.gna; 
+    this->ENa = h.ENa; 
+    this->gk2 = h.gk2;
+    this->Ek = h.Ek; 
+    this->gl = h.gl;
+    this->El = h.El; 
+    this->tNa = h.tNa;
+    this->tk2 = h.tk2;
+    this->C = h.C; 
+    this->Iapp = h.Iapp;
+    this->VshiftK2 = h.VshiftK2; 
+}
+
 HH_model::HH_model(double gna,double ENa,double gk2,double Ek,double gl,double El,double tNa,double tk2,double C,double Iapp,double VshiftK2)
 {
     this->nx = 3;
@@ -43,6 +59,11 @@ HH_model::HH_model(double gna,double ENa,double gk2,double Ek,double gl,double E
     this->C = C; 
     this->Iapp = Iapp;
     this->VshiftK2 = VshiftK2; 
+}
+
+HH_model *HH_model::clone() const
+{
+    return new HH_model(*this);
 }
 
 

@@ -191,4 +191,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(dxC);
     
     mxFree(firstIndex);
+    
+    delete(vectorField);
 }

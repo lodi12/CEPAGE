@@ -24,7 +24,10 @@ private:
     
 public:
     Heaviside_synapse_model();
+    Heaviside_synapse_model(const Heaviside_synapse_model &other);
     Heaviside_synapse_model(double theta);
+    
+    Heaviside_synapse_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Vpre);
     double getActivation(double *x, double Vpre);

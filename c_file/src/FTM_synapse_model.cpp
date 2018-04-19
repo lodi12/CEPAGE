@@ -29,6 +29,20 @@ FTM_synapse_model::FTM_synapse_model(double nu, double theta)
     this->Ndelay = 0;
 }
 
+FTM_synapse_model::FTM_synapse_model(const FTM_synapse_model &other)
+{
+    this->nx = other.nx;
+    this->nu = other.nu;
+    this->theta = other.theta;
+    this->Ndelay = other.Ndelay;
+}
+
+FTM_synapse_model *FTM_synapse_model::clone() const
+{
+    return new FTM_synapse_model(*this);
+}
+
+
 
 double FTM_synapse_model::getActivation(double *x,double Vpre)
 {

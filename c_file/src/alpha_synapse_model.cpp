@@ -22,6 +22,15 @@ alpha_synapse_model::alpha_synapse_model()
     this->theta = 0;
 }
 
+alpha_synapse_model::alpha_synapse_model(const alpha_synapse_model &other)
+{
+    this->nx = other.nx;
+    this->alpha = other.alpha;
+    this->beta = other.beta;
+    this->nu = other.nu;
+    this->theta = other.theta;
+}
+
 alpha_synapse_model::alpha_synapse_model(double alpha, double beta, double nu, double theta)
 {
     this->nx = 1;
@@ -29,6 +38,12 @@ alpha_synapse_model::alpha_synapse_model(double alpha, double beta, double nu, d
     this->beta = beta;
     this->nu = nu;
     this->theta = theta;
+}
+
+
+alpha_synapse_model *alpha_synapse_model::clone() const
+{
+    return new alpha_synapse_model(*this);
 }
 
 

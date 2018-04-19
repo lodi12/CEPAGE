@@ -19,10 +19,22 @@ Heaviside_synapse_model::Heaviside_synapse_model()
     this->theta = 0;
 }
 
+Heaviside_synapse_model::Heaviside_synapse_model(const Heaviside_synapse_model &other)
+{
+    this->nx = other.nx;
+    this->theta = other.theta;
+}
+
+
 Heaviside_synapse_model::Heaviside_synapse_model(double theta)
 {
     this->nx = 0;
     this->theta = theta;
+}
+
+Heaviside_synapse_model *Heaviside_synapse_model::clone() const
+{
+    return new Heaviside_synapse_model(*this);
 }
 
 

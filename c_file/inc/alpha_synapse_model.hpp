@@ -27,7 +27,10 @@ private:
     
 public:
     alpha_synapse_model();
+    alpha_synapse_model(const alpha_synapse_model &other);
     alpha_synapse_model(double alpha, double beta,double nu,double theta);
+    
+    alpha_synapse_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Vpre);
     double getActivation(double *x, double Vpre);

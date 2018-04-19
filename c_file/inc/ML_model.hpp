@@ -30,7 +30,10 @@ private:
     
 public:
     ML_model();
+    ML_model(const ML_model &m);
     ML_model(double CM,double gCa,double V3,double V4,double phi,double gl,double Vl,double I);
+    
+    ML_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Iext);
     

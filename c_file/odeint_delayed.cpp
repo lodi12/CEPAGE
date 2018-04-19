@@ -206,4 +206,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
             ptr[i+j*steps] = x_vec[i][j];
         
     x_vec.clear();
+    
+    delete(vectorField);
 }

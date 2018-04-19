@@ -27,6 +27,9 @@ private:
 public:
     FN_relaxation_model();
     FN_relaxation_model(double I,double eps);
+    FN_relaxation_model(const FN_relaxation_model &f);
+    
+    FN_relaxation_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Iext);
     

@@ -24,6 +24,9 @@ class neuron_model : public dynSys{
     
     
 public:
+    
+    virtual neuron_model *clone() const = 0;
+    
     virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
     
     /* Xprec is a Ndelays x Nstates matrix */
@@ -35,6 +38,9 @@ public:
     
     int getnx();
 
+    virtual ~neuron_model()
+    {}
+    
 };
 
 #endif /* NEURON_MODEL_H */

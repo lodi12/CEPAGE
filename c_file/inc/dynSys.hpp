@@ -14,16 +14,17 @@
 #ifndef DYNSYS_H
 #define DYNSYS_H
 
-#include "stdlib.h"
 
 class dynSys 
 {
     
 protected:
         int Ndelay = 0;
-        double *delays = {};
+        double *delays;
     
 public:
+   
+    
     virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
     virtual void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
     
@@ -38,6 +39,8 @@ public:
     int getNdelay();
     void getDelays(double *del);
     
+    virtual ~dynSys()
+    {}
 
 };
 

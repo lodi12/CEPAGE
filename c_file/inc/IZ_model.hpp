@@ -30,7 +30,10 @@ private:
     
 public:
     IZ_model();
+    IZ_model(const IZ_model &iz);
     IZ_model(double a, double b, double c, double d, double I, double gL, double El);
+    
+    IZ_model *clone() const;
     
     void getXdot(double t, double *x, double *xdot,double Iext);
     

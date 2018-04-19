@@ -15,7 +15,7 @@
 
 void dynSys::getFirstIndex(int *firstIndex)
 {
-    firstIndex = (int *)malloc(sizeof(int));
+    firstIndex = new int[1];
     firstIndex[0] = 0;
 }
 

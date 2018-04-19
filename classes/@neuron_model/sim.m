@@ -175,7 +175,7 @@ if ~object.is_delayed
         end
         
         mkdir(nameFolder);
-        
+        cd(nameFolder);
         %     object.generateC('vectorField');
         %     movefile('vectorField.c','vectorField.cpp');
         
@@ -314,10 +314,21 @@ else
             error('Integrator step dt must be provided when using eulero integrator');
         end
         
-        oldFolder = cd;
-        mkdir('tmp');
+       oldFolder = cd;
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        
+        
         dt = integratorOptions.dt;
-        cd('tmp');
+        cd(nameFolder);
         %     object.generateC('vectorField');
         
         % create vectorField.cpp
@@ -346,7 +357,7 @@ else
         
         clear eulero_delayed;
         
-        rmdir('tmp','s');
+        rmdir(nameFolder,'s');
         X = X';
         T = linspace(Tspan(1),Tspan(2),nStep);
     elseif strcmp(integrator,'odeint')
@@ -363,9 +374,22 @@ else
         else
             dt = integratorOptions.dt;
         end
+        
+        
         oldFolder = cd;
-        mkdir('tmp');
-        cd('tmp');
+        
+        ii = 0;
+        nameFolder = 'tmp';
+        
+        while(exist(nameFolder,'dir') == 7)
+            ii = ii+1;
+            nameFolder = ['tmp',num2str(ii)];
+        end
+        
+        mkdir(nameFolder);
+        
+        cd(nameFolder);
+        
         %     object.generateC('vectorField');
         %     movefile('vectorField.c','vectorField.cpp');
         
@@ -399,7 +423,7 @@ else
         clear odeint_delayed;
         
         cd(oldFolder);
-        rmdir('tmp','s');
+        rmdir(nameFolder,'s');
         
     else
         %     integratorOptions.Jacobian = @object.getJacobian;

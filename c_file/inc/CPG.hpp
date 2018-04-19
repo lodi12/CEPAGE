@@ -22,7 +22,6 @@
 #include "neuron_model.hpp"
 #include "synapse_model.hpp"
 
-#include "stdlib.h"
 #include "math.h"
 
 using namespace std;
@@ -37,8 +36,33 @@ public: struct synStruct
     double Esyn;
     synapse_model *activation;
     
-    synStruct(){};
-    synStruct(int i, int j, double g, double Esyn, synapse_model *activation){this->i = i;this->j = j;this->g = g;this->Esyn = Esyn; this->activation = activation;};
+    synStruct(const synStruct &s)
+    {
+        this->i = s.i;
+        this->j = s.j;
+        this->g = s.g;
+        this->Esyn = s.Esyn;
+        this->activation = (s.activation)->clone();
+    };
+    
+    synStruct(int i, int j, double g, double Esyn, synapse_model *activation)
+    {
+        this->i = i;
+        this->j = j;
+        this->g = g;
+        this->Esyn = Esyn;
+        this->activation = activation->clone();
+    };
+    
+    synStruct *clone() const
+    {
+        return new synStruct(*this);
+    }
+    
+    ~synStruct()
+    {
+        delete(activation);
+    }
 };
 
 typedef synStruct synStruct_t; 

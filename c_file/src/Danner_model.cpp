@@ -55,6 +55,32 @@ Danner_model::Danner_model(double C, double gNaP, double ENa, double gl, double 
     this->EsynE = EsynE;
 }
 
+Danner_model::Danner_model(const Danner_model &d)
+{
+    this->nx = d.nx;
+    this->C = d.C;
+    this->gNaP = d.gNaP;
+    this->ENa = d.ENa;
+    this->gl = d.gl;
+    this->El = d.El;
+    this->VhalfM = d.VhalfM;
+    this->km = d.km;
+    this->Vhalfh = d.Vhalfh;
+    this->kh = d.kh;
+    this->tau0 = d.tau0;
+    this->tauMax = d.tauMax;
+    this->VhalfTau = d.VhalfTau;
+    this->kTau = d.kTau;
+    this->Di = d.Di;
+    this->gSynE = d.gSynE;
+    this->EsynE = d.EsynE;
+}
+
+Danner_model *Danner_model::clone() const
+{
+    return new Danner_model(*this);
+}
+
 
 void Danner_model::getXdot(double t, double *x, double *xdot,double Iext)
 {

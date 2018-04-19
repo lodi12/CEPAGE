@@ -25,6 +25,19 @@ IZ_model::IZ_model()
     this->El = 0;
 }
 
+IZ_model::IZ_model(const IZ_model &iz) 
+{
+    this->nx = iz.nx;
+    this->a = iz.a;
+    this->b = iz.b;
+    this->c = iz.c;
+    this->d = iz.d;
+    this->I = iz.I;
+    this->gL = iz.gL;
+    this->El = iz.El;
+}
+
+
 IZ_model::IZ_model(double a, double b, double c, double d, double I, double gL, double El) 
 {
     this->nx = 2;
@@ -37,6 +50,10 @@ IZ_model::IZ_model(double a, double b, double c, double d, double I, double gL, 
     this->El = El;
 }
 
+IZ_model *IZ_model::clone() const
+{
+    return new IZ_model(*this);
+}
 
 void IZ_model::getXdot(double t, double *x, double *xdot,double Iext)
 {

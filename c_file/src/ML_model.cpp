@@ -26,6 +26,19 @@ ML_model::ML_model()
     this->I = 0;
 }
 
+ML_model::ML_model(const ML_model &m)
+{
+    this->nx = m.nx;
+    this->CM = m.CM;
+    this->gCa = m.gCa;
+    this->V3 = m.V3;
+    this->V4 = m.V4;
+    this->phi = m.phi;
+    this->gl = m.gl;
+    this->Vl = m.Vl;
+    this->I = m.I;
+}
+
 ML_model::ML_model(double CM,double gCa,double V3,double V4,double phi,double gl,double Vl,double I)
 {
     this->nx = 2;
@@ -37,6 +50,12 @@ ML_model::ML_model(double CM,double gCa,double V3,double V4,double phi,double gl
     this->gl = gl;
     this->Vl = Vl;
     this->I = I;
+}
+
+
+ML_model *ML_model::clone() const
+{
+    return new ML_model(*this);
 }
 
 void ML_model::getXdot(double t, double *x, double *xdot,double Iext)
