@@ -1,7 +1,7 @@
 #include "mex.h"
 #include "math.h"
 #include "vectorField.hpp"
-#include <stdio.h>
+
 /* The gateway function */
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
