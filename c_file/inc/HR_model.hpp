@@ -32,7 +32,7 @@ public:
     
     virtual HR_model *clone() const;
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~HR_model();
 

@@ -4,7 +4,7 @@
 #include <stdio.h>
 /* The gateway function */
 void mexFunction( int nlhs, mxArray *plhs[],
-                  int nrhs, const mxArray *prhs[])
+        int nrhs, const mxArray *prhs[])
 {
     mwSize nStep;   /* Number of step */
     double dt;      /* Integration step */
@@ -12,7 +12,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mwSize i,j;
     
     double *dx;
-
+    
     double *oldState;
     double *currentState;
     double currentT;
@@ -30,19 +30,20 @@ void mexFunction( int nlhs, mxArray *plhs[],
     double diff,tmp;
     
     mwSize *nEvent;
-
+    
     mwSize minEventNumber;
     
     
     mwSize N;
-
+    
     int *firstIndex;
     
     dynSys *vectorField;
-
+    
     mwSize tmpIndex;
     
-        
+    double *I0;
+    
     /* check for proper number of arguments */
     if(nrhs!=7) {
         mexErrMsgIdAndTxt("MyToolbox:sim:nrhs","Error! 7 Input required.");
@@ -51,11 +52,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("MyToolbox:sim:nrhs","Error! 1 Output required.");
     }
     
-     initVectorField(&vectorField);
-  
+    initVectorField(&vectorField);
     
-    Nstati =  mxGetScalar(prhs[0]);   
-    nStep = mxGetScalar(prhs[1]);    
+    
+    Nstati =  mxGetScalar(prhs[0]);
+    nStep = mxGetScalar(prhs[1]);
     dt = mxGetScalar(prhs[2]);
     oldState = mxGetPr(prhs[3]);
     Vth = mxGetScalar(prhs[4]);
@@ -63,11 +64,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
     N =  mxGetScalar(prhs[6]);
     
     
+    I0 = (double *)mxMalloc(Nstati*sizeof(double));
+    
+    for(i=0;i<Nstati;i++)
+        I0[i] = 0;
+    
     currentState = (double *)mxMalloc(Nstati*sizeof(double));
     dx = (double *)mxMalloc(Nstati*sizeof(double));
     nEvent = (mwSize *)mxMalloc(N*sizeof(mwSize));
-    eventMatrix = (double **)mxMalloc(N*sizeof(double *));   
-   
+    eventMatrix = (double **)mxMalloc(N*sizeof(double *));
+    
     firstIndex = (int *)mxMalloc((N+2*N*N)*sizeof(int));
     
     vectorField->getFirstIndex(firstIndex);
@@ -83,29 +89,29 @@ void mexFunction( int nlhs, mxArray *plhs[],
     {
         currentState[j] = 0;
     }
-
+    
     currentT = 0;
-        
+    
     for(i=1;i<nStep;i++)
     {
-                
+        
         vectorField->getXdot(currentT,oldState,dx,0);
         currentT += dt;
-
+        
         for(j=0;j<Nstati;j++)
             currentState[j] = oldState[j]+dt*dx[j];
         
         
-
+        
         vectorField->resetStates(currentState);
-
-
-         
+        
+        
+        
         for(j=0;j<N;j++)
         {
-
+            
             tmpIndex = firstIndex[j];
-
+            
             if((oldState[tmpIndex] < Vth) && (currentState[tmpIndex] > Vth))
             {
                 nEvent[j]++;
@@ -113,7 +119,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                 eventMatrix[j][nEvent[j]-1] = (Vth-oldState[tmpIndex])/(currentState[tmpIndex]-oldState[tmpIndex])*(dt)+(currentT-dt);
             }
         }
-
+        
         for(j=0;j<Nstati;j++)
         {
             oldState[j] = currentState[j];
@@ -121,23 +127,23 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     
     
-     minEventNumber = nEvent[0];
-
-     for(i=1;i<N;i++)
-         if(minEventNumber > nEvent[i])
-             minEventNumber = nEvent[i];
+    minEventNumber = nEvent[0];
+    
+    for(i=1;i<N;i++)
+        if(minEventNumber > nEvent[i])
+            minEventNumber = nEvent[i];
     
     plhs[0] = mxCreateDoubleMatrix(minEventNumber,N-1,mxREAL);
     phiOut = mxGetPr(plhs[0]);
     if(minEventNumber > 1)
     {
         period = eventMatrix[0][minEventNumber-1] - eventMatrix[0][minEventNumber-2];
-
+        
         for(i=0;i<N-1;i++)
         {
             for(j=0;j<minEventNumber;j++)
             {
-               phiOut[i*minEventNumber+j] =  ((eventMatrix[i+1][j]-eventMatrix[0][j])/period);
+                phiOut[i*minEventNumber+j] =  ((eventMatrix[i+1][j]-eventMatrix[0][j])/period);
             }
         }
     }
@@ -153,4 +159,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(firstIndex);
     
     delete(vectorField);
+    mxFree(I0);
 }

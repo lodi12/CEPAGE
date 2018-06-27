@@ -35,6 +35,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     dynSys *vectorField;
     
+        double *I0;  
+    
+
+    
     /* check for proper number of arguments */
     if(nrhs!=5) {
         mexErrMsgIdAndTxt("MyToolbox:sim:nrhs","Error! 5 Input required.");
@@ -64,6 +68,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     x0 = mxGetPr(prhs[3]);
     x0Del = mxGetPr(prhs[4]);
     
+        I0 = (double *)mxMalloc(Nstati*sizeof(double));
+    
+    for(i=0;i<Nstati;i++)
+        I0[i] = 0;
     
     dx = (double *)mxMalloc(Nstati*sizeof(double));
         
@@ -97,7 +105,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
         ptr = xOutMatrix+i*Nstati;
         
-        vectorField->getXdot(t,ptr-Nstati,dx,0,xDel);
+        vectorField->getXdot(t,ptr-Nstati,dx,I0,xDel);
  
         for(j=0;j<Nstati;j++)
         {
@@ -132,5 +140,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(delayIndex);
     
     delete(vectorField);
+    mxFree(I0);
 
 }

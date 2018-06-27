@@ -67,7 +67,7 @@ HH_model *HH_model::clone() const
 }
 
 
-void HH_model::getXdot(double t, double *x, double *xdot,double Iext)
+void HH_model::getXdot(double t, double *x, double *xdot,double *Iext)
 {
 double gna = this->gna;
 double ENa = this->ENa;
@@ -90,7 +90,7 @@ double INa = gna*nInf*nInf*nInf*x[1]*(x[0]-ENa);
 double Ik2 = gk2*x[2]*x[2]*(x[0]-Ek);
 double Il = gl*(x[0]-El);
 
-xdot[0] = (-INa-Ik2-Il-Iapp+Iext)/C;
+xdot[0] = (-INa-Ik2-Il-Iapp+Iext[0])/C;
 xdot[1] = (hInf- x[1])/tNa;
 xdot[2] = (mInf- x[2])/tk2;
 

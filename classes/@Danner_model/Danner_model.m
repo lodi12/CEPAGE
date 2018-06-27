@@ -1,25 +1,23 @@
 classdef Danner_model < neuron_model
     
-    % HR_model   Neuron represented by the Hindmarsh Rose model
+    % Danner_model   Neuron represented by the Danner model
     %
     % The Neuron is modeld as follow:
     %   _
     %  |
     %  | dx/dt = y − x^3 + bx^2 − z + I - I_{ext}
     %  |
-    % <  dẏ/dt = 1 − 5x^2 − y
+    % <  d�?/dt = 1 − 5x^2 − y
     %  |
     %  | dz/dt = \mu (s (x-x_{rest}) - z)
     %  |_
     %
-    % Ther model has three state variable; x represent the membrane potential.
-    % b,I,\mu,s and x_{rest} are parameters that allows to change neuron
-    % behaviours.
+    % Ther model has two state variable; V represent the membrane potential.
     %
-    % OBJ = HR_model()
+    % OBJ = Danner_model()
     % Builds an HR_model object OBJ with all parameters equal to 0.
     %
-    % OBJ = HR_model(b,mu,s,I,x_{rest})
+    % OBJ = Danner_model(C,gNap,Ena,gl,El,Vhalfm,km,Vhalfh,kh,tau0,tauMax,VhalfTau,kTau,Di,gSyn,Esyn)    
     % Builds an HR_model object OBJ with user assigned parameters value
     %
     %

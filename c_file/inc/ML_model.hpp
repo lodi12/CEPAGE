@@ -15,7 +15,7 @@
 #define ML_MODEL_H
 
 #include "neuron_model.hpp"
-#include <math.h>
+#include <cmath>
 class ML_model : public neuron_model {
     
 private:
@@ -35,7 +35,7 @@ public:
     
     ML_model *clone() const;
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~ML_model();
 

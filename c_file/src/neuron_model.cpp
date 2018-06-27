@@ -29,7 +29,7 @@ void neuron_model::resetStates(double *x)
 }
 
 
-void neuron_model::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
+void neuron_model::getXdot(double t, double *x, double *xdot,double *Iext,double **Xprec)
 {
     this->getXdot(t,x,xdot,Iext);
 }

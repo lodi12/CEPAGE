@@ -40,12 +40,12 @@ FN_relaxation_model *FN_relaxation_model::clone() const
     return new FN_relaxation_model(*this);
 }
 
-void FN_relaxation_model::getXdot(double t, double *x, double *xdot,double Iext)
+void FN_relaxation_model::getXdot(double t, double *x, double *xdot,double *Iext)
 {
     double eps = this->eps;
     double I = this->I;
     
-    xdot[0] = x[0]-x[0]*x[0]*x[0]+I-x[1]+Iext;
+    xdot[0] = x[0]-x[0]*x[0]*x[0]+I-x[1]+Iext[0];
     xdot[1] = eps*(1/(1+exp(-10*x[0]))-x[1]);
     
     

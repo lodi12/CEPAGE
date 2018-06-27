@@ -43,7 +43,7 @@ void synapse_model::resetStates(double *x, double Vpre)
 }
 
 
-void synapse_model::getXdot(double t, double *x, double *xdot, double Vpre, double **xold)
+void synapse_model::getXdot(double t, double *x, double *xdot, double Vpre, double **xold, double *VpreOld)
 {
     this->getXdot(t,x,xdot,Vpre);
 }

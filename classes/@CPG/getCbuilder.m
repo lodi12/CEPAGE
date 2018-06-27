@@ -118,7 +118,7 @@ function str = getCbuilder(object)
     
     str = [str,'for(i=0;i<Nel;i++)\n'];
     str = [str,'    delete(elSyn[i]);\n'];
-    str = [str,'delete[](elSyn);\n'];
+    str = [str,'delete[](elSyn)'];
     
     
     

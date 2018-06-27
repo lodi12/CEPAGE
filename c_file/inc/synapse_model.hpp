@@ -32,7 +32,7 @@ public:
     virtual double getActivation(double *x,double Vpre) = 0;
     
     /* Xold is a Ndelays x Nstates matrix */
-    virtual void getXdot(double t, double *x, double *xdot, double Vpre, double **xold);
+    virtual void getXdot(double t, double *x, double *xdot, double Vpre, double **xold, double *VpreOld);
     virtual void getXdot(double t, double *x, double *xdot, double Vpre) = 0;
     
     //virtual bool getResetConditions(double *x, double Vpre, double *VpreOld);

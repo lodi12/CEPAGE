@@ -27,6 +27,8 @@ double oldT;
 
 dynSys *vectorField;
 
+double *I0;
+
 /* The rhs of x' = f(x) */
 void cppVectorialField( const state_type &x , state_type &dxdt , const double  t  )
 {
@@ -35,7 +37,7 @@ void cppVectorialField( const state_type &x , state_type &dxdt , const double  t
         xC[i] = x[i];
     
     
-    vectorField->getXdot(t,xC,dxC,0);
+    vectorField->getXdot(t,xC,dxC,I0);
     
     for(i=0;i<Nstati;i++)
         dxdt[i] = dxC[i];
@@ -101,6 +103,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     double *phiOut;
     double period;
+    double **eventMatrix;
     
     /* check for proper number of arguments */
     if(nrhs!=6) {
@@ -119,7 +122,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     state_type xinit(Nstati);
     state_type x(Nstati);
     
-    double **eventMatrix;
+    I0 = (double *)(mxMalloc(Nstati*sizeof(double)));
+    for(i=0;i<Nstati;i++)
+        I0[i] = 0;
     
     xC = (double *)(mxMalloc(Nstati*sizeof(double)));
     dxC = (double *)(mxMalloc(Nstati*sizeof(double)));
@@ -193,4 +198,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(firstIndex);
     
     delete(vectorField);
+    mxFree(I0);
 }

@@ -32,7 +32,7 @@ void dynSys::getDelays(double *del)
 }
 
 
-void dynSys::getXdot(double t, double *x, double *xdot,double Iext,double **Xprec)
+void dynSys::getXdot(double t, double *x, double *xdot,double *Iext,double **Xprec)
 {
     this->getXdot(t,x,xdot,Iext);
 }

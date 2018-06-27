@@ -58,7 +58,7 @@ ML_model *ML_model::clone() const
     return new ML_model(*this);
 }
 
-void ML_model::getXdot(double t, double *x, double *xdot,double Iext)
+void ML_model::getXdot(double t, double *x, double *xdot,double *Iext)
 {
 double gCa = this->gCa;
 double I = this->I;
@@ -81,7 +81,7 @@ double Ninf = 0.5*(1 + tanh((x[0] - V3 )/V4 ));
 double lamda_N = phi*cosh((x[0] - V3 )/(2*V4) );
 
 xdot[1] = lamda_N*(Ninf-x[1]);
-xdot[0] = (-gl*(x[0] - Vl) - gCa*Minf*(x[0] - VCa) - gK*x[1]*(x[0] - Vk ) + I + Iext)/CM;
+xdot[0] = (-gl*(x[0] - Vl) - gCa*Minf*(x[0] - VCa) - gK*x[1]*(x[0] - Vk ) + I + Iext[0])/CM;
 
 }
 

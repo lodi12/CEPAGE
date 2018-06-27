@@ -35,7 +35,7 @@ public:
     
     IZ_model *clone() const;
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     
     bool getResetConditions(double *x);

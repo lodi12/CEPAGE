@@ -17,7 +17,8 @@
 
 
 #include "neuron_model.hpp"
-#include <math.h>
+#include <cmath>
+
 class FN_relaxation_model : public neuron_model {
     
 private:
@@ -31,7 +32,7 @@ public:
     
     FN_relaxation_model *clone() const;
     
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     virtual ~FN_relaxation_model();
 

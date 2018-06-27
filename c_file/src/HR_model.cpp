@@ -49,7 +49,7 @@ HR_model *HR_model::clone() const
 }
 
 
-void HR_model::getXdot(double t, double *x, double *xdot,double Iext)
+void HR_model::getXdot(double t, double *x, double *xdot,double *Iext)
 {
     double b = this->b;
     double I = this->I;
@@ -63,7 +63,7 @@ void HR_model::getXdot(double t, double *x, double *xdot,double Iext)
             
     double x2 = xx*xx;
     
-    xdot[0] = yy - xx*x2 + b*x2 - zz + I +Iext; 
+    xdot[0] = yy - xx*x2 + b*x2 - zz + I +Iext[0]; 
     xdot[1] = 1-5*x2 - yy;
     xdot[2] = mu*(s*(xx - x_rest) - zz);
     

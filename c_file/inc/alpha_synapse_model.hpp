@@ -15,7 +15,7 @@
 #define ALPHA_SYNAPSE_MODEL_H
 
 #include "synapse_model.hpp"
-#include <math.h>
+#include <cmath>
 
 class alpha_synapse_model : public synapse_model {
     

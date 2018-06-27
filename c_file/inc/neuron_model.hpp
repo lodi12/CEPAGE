@@ -27,10 +27,10 @@ public:
     
     virtual neuron_model *clone() const = 0;
     
-    virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
+    virtual void getXdot(double t, double *x, double *xdot,double *Iext) = 0;
     
     /* Xprec is a Ndelays x Nstates matrix */
-    virtual void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
+    virtual void getXdot(double t, double *x, double *xdot,double *Iext,double **Xprec);
 
     virtual bool getResetConditions(double *x);
     virtual void resetStates(double *x);

@@ -15,7 +15,7 @@ classdef CPG
     % 	OBJ = CPG()
     % 	Builds a CPG object OBJ with all parameters equal to 0.
     %
-    % 	OBJ = CPG(g_in,g_ex,g_el,Esyn_In,Esyn_Ex,inhActivation,excActivation)
+    % 	OBJ = CPG(N,neurons,g_in,g_ex,g_el,Esyn_In,Esyn_Ex,inhActivation,excActivation)
     % 	Builds a CPG object OBJ with user assigned parameters value
     %
     %   CPG methods:

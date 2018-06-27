@@ -22,7 +22,7 @@
 #include "neuron_model.hpp"
 #include "synapse_model.hpp"
 
-#include "math.h"
+#include <cmath>
 
 using namespace std;
 
@@ -97,8 +97,8 @@ public:
 	CPG(int N,neuron_model **neuroni, int Ninh, int Nexc, int Nel, synStruct_t **inhSyn, synStruct_t **excSyn , synStruct_t **elSyn, int Ndelay, double networkDelays[]);
     
     /* Xprec is a Ndelays x Nstates matrix */
-    void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
-    void getXdot(double t, double *x, double *xdot,double Iext);
+    void getXdot(double t, double *x, double *xdot,double *Iext,double **Xprec);
+    void getXdot(double t, double *x, double *xdot,double *Iext);
     
     bool getResetConditions(double *x);
     

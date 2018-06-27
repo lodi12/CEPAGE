@@ -25,8 +25,8 @@ protected:
 public:
    
     
-    virtual void getXdot(double t, double *x, double *xdot,double Iext) = 0;
-    virtual void getXdot(double t, double *x, double *xdot,double Iext,double **Xprec);
+    virtual void getXdot(double t, double *x, double *xdot,double *Iext) = 0;
+    virtual void getXdot(double t, double *x, double *xdot,double *Iext,double **Xprec);
     
     virtual bool getResetConditions(double *x) = 0;
     virtual bool getResetConditions(double *x,double **Xprec);
