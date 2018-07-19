@@ -76,6 +76,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     firstIndex = (int *)mxMalloc((N+2*N*N)*sizeof(int));
     
+    
     vectorField->getFirstIndex(firstIndex);
     
     
@@ -95,7 +96,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     for(i=1;i<nStep;i++)
     {
         
-        vectorField->getXdot(currentT,oldState,dx,0);
+        vectorField->getXdot(currentT,oldState,dx,I0);
         currentT += dt;
         
         for(j=0;j<Nstati;j++)

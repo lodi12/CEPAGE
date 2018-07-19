@@ -159,7 +159,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         for(j=0;j<Ndelay;j++)
             xDel[j] = xDelTot[delayIndex[j]];
         
-        vectorField->getXdot(currentT,oldState,dx,0,xDel);
+        vectorField->getXdot(currentT,oldState,dx,I0,xDel);
         currentT += dt;
         
         for(j=0;j<Nstati;j++)

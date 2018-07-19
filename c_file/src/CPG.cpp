@@ -594,7 +594,7 @@ void CPG::resetStates(double *x)
 void CPG::getFirstIndex(int *firstIndex)
 {
     int i;
-    for(i=0;i<N+2*N*N;i++)
+    for(i=0;i<N+Ninh+Nexc;i++)
         firstIndex[i] = this->firstState[i];
 }
 
